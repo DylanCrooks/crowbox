@@ -1,12 +1,25 @@
 #include <stdint.h>
 #pragma once
 
+
+typedef enum { STAGE_1_PRESENCE_TRIGGER, STAGE_2_OBJECT_DEPOSIT } training_stage_t;
+typedef enum { SCHEDULE_CONTINUOUS, SCHEDULE_RATIO_3_4, SCHEDULE_RATIO_1_2, SCHEDULE_RATIO_1_3 } reward_schedule_t;
+typedef enum { REWARD_TYPE_LVT, REWARD_TYPE_HVT, REWARD_TYPE_EHVT } reward_type_t;
+typedef enum { DISPENSE_REASON_PRESET, DISPENSE_REASON_VOD, DISPENSE_REASON_JACKPOT } dispense_reason_t;
+typedef enum { TONE_REJECT, TONE_ACCEPT, TONE_JACKPOT } tone_id_t;
+
+typedef struct { uint8_t dispenser_id; uint8_t dose_count; } reward_item_t;
+typedef struct { reward_item_t items[4]; uint8_t item_count; } reward_bundle_t;
+
+typedef struct {
+    crowbox_event_t     type;
+    int32_t              value;
+    weight_sensor_id_t    source;     // for WEIGHT_* events
+    dispense_reason_t      reason;     // for DISPENSE_COMPLETE / REWARD_GRANTED events
+    int64_t                 timestamp_ms;
+} crowbox_event_msg_t;
 // Training stage - controls state machine behavior
-typedef enum {
-    STAGE_2_PRESENCE_TRIGGER,   // PIR trip alone = reward + object, if weight change detected, validate object and jackpot if valid
-    STAGE_3_OBJECT_DEPOSIT,     // valid object weight in chamber = reward
-    STAGE_4_SELF_SOURCED,      // valid object weight + CV validation = reward
-} training_stage_t;
+
 
 typedef enum {
     SCHEDULE_CONTINUOUS,   // every valid deposit rewarded
@@ -30,6 +43,10 @@ typedef enum {
     STATE_NO_REWARD,              // object valid but no food (variable ratio reward training)
     STATE_GATE_OPENING,         // feed chamber gate opens 
     STATE_GATE_CLOSING,        // feed chamber gate closing after delay, (send back to idle after)
+    STATE_TRAPDOOR_UNLOCKING,   // solenoid retracts
+    STATE_TRAPDOOR_OPENING,     // MG996R lifts door
+    STATE_TRAPDOOR_CLOSING,
+    STATE_TRAPDOOR_LOCKING,     // solenoid re-engages
     STATE_LOGGING,            // sending event to Notecard
     STATE_COOLDOWN,           // brief reset
     STATE_ERROR               // sensor fault

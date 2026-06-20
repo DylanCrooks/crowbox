@@ -22,6 +22,7 @@ Board: DOIT ESP32 DEVKIT V1 (esp32doit-devkit-v1)
 | 22 | I2C SCL | Shared bus: Notecard + MCP23017 |
 | 13 | UART TX → Pi Zero | Phase 6+ |
 | 14 | UART RX ← Pi Zero | Phase 6+ |
+| 23 | MG996R trapdoor lifter servo (PWM, needs native pin like the others)
 
 **14 of ~25 usable native GPIO in use.**
 
@@ -51,13 +52,14 @@ Expander pin assignments:
 | GPA3 | Hopper 4 empty-detect (IR beam) |
 | GPA4 | Signal light — green (valid) |
 | GPA5 | Signal light — red (invalid) |
-| GPA6 | White illumination (grouped, via MOSFET) |
+| GPA6 | White illumination (plug into MOSFET for 5V LED strip) |
 | GPA7 | Gate actuator A — IN1 |
 | GPB0 | Gate actuator A — IN2 |
 | GPB1 | Gate actuator B — IN1 |
 | GPB2 | Gate actuator B — IN2 |
 | GPB3 | Signal light - blue (jackpot) |
-| GPB4-GPB7 | Spare (4 free) |
+| GPB4 | Solenoid logic line, via IRF520 |
+| GPB5-GPB7 | Spare (3 free) |
 
 ## Power Domains
 

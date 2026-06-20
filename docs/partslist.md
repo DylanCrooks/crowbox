@@ -1,0 +1,218 @@
+# CrowBox Parts List
+
+Open this file with Ctrl+Shift+V (markdown preview) to get clickable checkboxes. Clicking a box in preview toggles it in the actual file. Two checkboxes per part: Ordered and Received.
+
+---
+
+## Phase 0/1 — Core breadboard kit
+
+### ESP32 DevKitC (x3)
+- [ ] Ordered
+- [ ] Received
+
+### Breadboards — 830pt + 400pt kit
+- [ ] Ordered
+- [ ] Received
+
+### Jumper wire kit (M-M / M-F / F-F)
+- [ ] Ordered
+- [ ] Received
+
+### Resistor kit, assorted
+- [ ] Ordered
+- [ ] Received
+
+### USB-C cable (match your board's port)
+- [ ] Ordered
+- [ ] Received
+
+### Multimeter (AstroAI DM6000B or similar)
+- [ ] Ordered
+- [ ] Received
+
+### Logic analyzer, 8-channel (HiLetgo)
+- [ ] Ordered
+- [ ] Received
+
+### USB power meter (UM25C)
+- [ ] Ordered
+- [ ] Received
+
+---
+
+## Sensors
+
+### Load cell 1kg + HX711 — deposit chamber (kit #1)
+- [ ] Ordered
+- [ ] Received
+
+### Load cell 1kg + HX711 — reward chamber (kit #2, identical part)
+- [ ] Ordered
+- [ ] Received
+
+### IR beam break sensor pairs (need 4 total for hoppers — 1 already owned, 3 more)
+PAUSED — deciding on approach, revisit before Phase 1 sensor work wraps up
+- [ ] Ordered (x3 more)
+- [ ] Received
+
+### PIR motion sensor
+- [ ] Ordered
+- [ ] Received
+
+---
+
+## Actuators / drivers
+
+### SG90 servos (x4 — hopper dosers)
+- [ ] Ordered
+- [ ] Received
+
+### MG996R servo (2-pack — 1 for trapdoor lifter, 1 spare)
+- [ ] Ordered
+- [ ] Received
+
+### Mini 12V linear actuator, 50mm stroke (x2 — gate lift)
+- [ ] Ordered
+- [ ] Received
+
+### L298N dual H-bridge driver module (for 2x linear actuators)
+- [ ] Ordered
+- [ ] Received
+
+---
+
+## Trapdoor mechanism
+
+### 12V solenoid lock (Bonsicoky, deadbolt for trapdoor)
+- [ ] Ordered
+- [ ] Received
+
+### MOSFET driver module, 2-pack (1 for solenoid, 1 for LED strip switching)
+- [ ] Ordered
+- [ ] Received
+
+### 1N4007 flyback diode (protects solenoid MOSFET from inductive kickback)
+- [ ] Ordered
+- [ ] Received
+
+(reuses existing deposit-chamber load cell — no new weight sensor needed)
+
+---
+
+## Indicators / lighting
+
+### LED pack, assorted (have — confirm in hand; includes blue for jackpot)
+- [ ] Received
+
+### Passive buzzer module (have — confirm in hand)
+- [ ] Received
+
+### 5V COB LED strip (deposit chamber lighting, aids future CV)
+- [ ] Ordered
+- [ ] Received
+
+---
+
+## Logic / I/O expansion
+
+### MCP23017 I2C GPIO expander breakout
+- [ ] Ordered
+- [ ] Received
+
+---
+
+## Power
+
+### 12V LiFePO4 battery, 8Ah
+- [ ] Ordered
+- [ ] Received
+
+### 12V 2A wall adapter, bare wire (for bench testing before battery is wired)
+- [ ] Ordered
+- [ ] Received
+
+### Adjustable buck converter w/ voltmeter display, 12V→5V (2-pack — 1 for main 5V rail, 1 as a voltage-capping regulator for the actuator/solenoid line, or spare)
+- [ ] Ordered
+- [ ] Received
+
+### Inline fuse holder, waterproof (ecocstm, 2-pack)
+- [ ] Ordered
+- [ ] Received
+
+### ATC/ATO blade fuse assortment kit (55pc, 2A–40A — use 5A for the 12V line)
+- [ ] Ordered
+- [ ] Received
+
+### WAGO 221 lever connector assortment (2/3/5-conductor mixed pack)
+- [ ] Ordered
+- [ ] Received
+
+### ~~DC barrel jack to screw terminal adapter~~
+Not needed — using bare wire adapter instead. Keep this line only as a fallback if bare wire ends up being impractical to terminate cleanly; if so, switch to a 5.5x2.1mm barrel adapter and revisit this part.
+
+### ~~MB102 breadboard power supply module~~
+Likely unnecessary now that the adjustable buck converter can feed the breadboard directly. Skip unless you want a simple standalone testing supply before the full power chain is wired.
+
+---
+
+## Phase 5 — Connectivity
+
+### Blues Wireless Notecard (LTE-M)
+- [ ] Ordered
+- [ ] Received
+
+### Notecarrier-A
+- [ ] Ordered
+- [ ] Received
+
+---
+
+## Phase 6 — Computer vision
+
+### Raspberry Pi Zero 2 WH (headers pre-soldered)
+- [ ] Ordered
+- [ ] Received
+
+### Pi Camera Module v3
+- [ ] Ordered
+- [ ] Received
+
+### Pi Zero camera cable (narrow connector — different from full-size Pi)
+- [ ] Ordered
+- [ ] Received
+
+### 32GB microSD card
+- [ ] Ordered
+- [ ] Received
+
+### USB OTG micro adapter
+- [ ] Ordered
+- [ ] Received
+
+---
+
+## Phase 7 — Coral (optional, only after Phase 6 proven)
+
+### Google Coral USB Accelerator
+- [ ] Ordered
+- [ ] Received
+
+### P-channel MOSFET (Coral power switching)
+- [ ] Ordered
+- [ ] Received
+
+----
+
+## Soldering (buy when actually needed, not before)
+
+### Pinecil V2 soldering iron
+- [ ] Ordered
+- [ ] Received
+
+### Solder, 60/40, 0.6mm
+- [ ] Ordered
+- [ ] Received
+
+### Brass tip cleaner
+- [ ] Ordered
+- [ ] Received
