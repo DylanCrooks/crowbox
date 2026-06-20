@@ -7,48 +7,49 @@ Open this file with Ctrl+Shift+V (markdown preview) to get clickable checkboxes.
 ## Phase 0/1 — Core breadboard kit
 
 ### ESP32 DevKitC (x3)
-- [ ] Ordered
-- [ ] Received
+- [x] Ordered
+- [x] Received
 
 ### Breadboards — 830pt + 400pt kit
-- [ ] Ordered
-- [ ] Received
+- [x] Ordered
+- [x] Received
 
 ### Jumper wire kit (M-M / M-F / F-F)
-- [ ] Ordered
-- [ ] Received
+- [x] Ordered
+- [x] Received
 
 ### Resistor kit, assorted
-- [ ] Ordered
+- [x] Ordered
 - [ ] Received
 
 ### USB-C cable (match your board's port)
-- [ ] Ordered
-- [ ] Received
+- [x] Received
 
 ### Multimeter (AstroAI DM6000B or similar)
-- [ ] Ordered
-- [ ] Received
+- [x] Ordered
+- [x] Received
 
 ### Logic analyzer, 8-channel (HiLetgo)
-- [ ] Ordered
-- [ ] Received
+- [x] Ordered
+- [x] Received
 
 ### USB power meter (UM25C)
-- [ ] Ordered
-- [ ] Received
+- [x] Ordered
+- [x] Received
 
 ---
 
 ## Sensors
 
 ### Load cell 1kg + HX711 — deposit chamber (kit #1)
-- [ ] Ordered
-- [ ] Received
+- [x] Ordered
+- [x] Received
 
 ### Load cell 1kg + HX711 — reward chamber (kit #2, identical part)
 - [ ] Ordered
 - [ ] Received
+
+### Load cell 5kg + HX711 (unnecessary now, bought already)
 
 ### IR beam break sensor pairs (need 4 total for hoppers — 1 already owned, 3 more)
 PAUSED — deciding on approach, revisit before Phase 1 sensor work wraps up
@@ -56,16 +57,16 @@ PAUSED — deciding on approach, revisit before Phase 1 sensor work wraps up
 - [ ] Received
 
 ### PIR motion sensor
-- [ ] Ordered
-- [ ] Received
+- [x] Ordered
+- [x] Received
 
 ---
 
 ## Actuators / drivers
 
 ### SG90 servos (x4 — hopper dosers)
-- [ ] Ordered
-- [ ] Received
+- [x] Ordered
+- [x] Received
 
 ### MG996R servo (2-pack — 1 for trapdoor lifter, 1 spare)
 - [ ] Ordered
@@ -102,7 +103,7 @@ PAUSED — deciding on approach, revisit before Phase 1 sensor work wraps up
 ## Indicators / lighting
 
 ### LED pack, assorted (have — confirm in hand; includes blue for jackpot)
-- [ ] Received
+- [x] Received
 
 ### Passive buzzer module (have — confirm in hand)
 - [ ] Received
