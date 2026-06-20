@@ -56,7 +56,8 @@ Expander pin assignments:
 | GPB0 | Gate actuator A — IN2 |
 | GPB1 | Gate actuator B — IN1 |
 | GPB2 | Gate actuator B — IN2 |
-| GPB3-GPB7 | Spare (5 free) |
+| GPB3 | Signal light - blue (jackpot) |
+| GPB4-GPB7 | Spare (4 free) |
 
 ## Power Domains
 
