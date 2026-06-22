@@ -64,11 +64,15 @@ Expander pin assignments:
 
 ## Power Domains
 
-| Rail | Voltage | Powers |
-|---|---|---|
-| ESP32 onboard regulator | 3.3V | ESP32, MCP23017, HX711 boards, IR sensors, PIR |
-| USB / breadboard supply | 5V | Servos, buzzer |
-| Separate wall adapter / battery | 12V | Linear actuators only, via L298N — common ground with logic side, separate power rail |
+| Rail | Source | Voltage | Powers |
+|---|---|---|---|
+| Main battery | LiFePO4 pack | 12V | Source for all downstream rails |
+| Logic rail | Buck converter #1 (12V→5V) | 5V | ESP32 VIN (onboard AMS1117 then regulates to 3.3V internally), all 5 servos (SG90 ×4, MG996R ×1), buzzer, COB LED strip (via GODIY MOSFET), signal LEDs red/green/blue |
+| Microcontroller rail | ESP32 onboard AMS1117 (from 5V VIN) | 3.3V | ESP32 core, MCP23017 (VDD), HX711 boards ×2, IR beam sensors ×4, PIR AM312 |
+| Actuator rail | 12V direct from battery (post-fuse) | 12V | Linear actuators ×2 (via L298N), solenoid (via IRF520 MOSFET) |
+| Buck converter #2 | TBD | TBD | Role not yet defined — clarify before build |
+
+Common ground: all rails share a single GND reference tied at the battery negative terminal.
 
 ## Why the native/expander split
 
