@@ -8,23 +8,24 @@ Board: DOIT ESP32 DEVKIT V1 (esp32doit-devkit-v1)
 
 | GPIO | Function | Notes |
 |---|---|---|
-| 27 | PIR sensor input | RTC-capable — required for deep sleep wake source |
-| 32 | HX711 #1 (deposit chamber) — SCK | Bit-bang timing, must be native |
-| 33 | HX711 #1 (deposit chamber) — DOUT | Bit-bang timing, must be native |
-| 25 | HX711 #2 (reward chamber) — SCK | Bit-bang timing, must be native |
-| 26 | HX711 #2 (reward chamber) — DOUT | Bit-bang timing, must be native |
-| 16 | Servo — Hopper 1 (seed/LVT) doser | LEDC PWM |
-| 17 | Servo — Hopper 2 (high-value/HVT) doser | LEDC PWM |
+| 34 | PIR sensor input | RTC-capable — deep sleep wake source. Input-only pin; AM312 is push-pull so no pull-up resistor needed |
+| 32 | HX711 #1 (deposit chamber) — SCK | Bit-bang timing, must be native output-capable GPIO |
+| 33 | HX711 #1 (deposit chamber) — DOUT | Bit-bang timing, must be native. Configure internal pull-up in firmware |
+| 25 | HX711 #2 (reward chamber) — SCK | Bit-bang timing, must be native output-capable GPIO |
+| 26 | HX711 #2 (reward chamber) — DOUT | Bit-bang timing, must be native. Configure internal pull-up in firmware |
+| 13 | Servo — Hopper 1 (seed/LVT) doser | LEDC PWM |
+| 14 | Servo — Hopper 2 (high-value/HVT) doser | LEDC PWM |
 | 18 | Servo — Hopper 3 (drug) doser | LEDC PWM |
 | 19 | Servo — Hopper 4 (object) doser | LEDC PWM |
+| 23 | MG996R trapdoor lifter servo | LEDC PWM |
 | 4 | Buzzer | LEDC PWM |
 | 21 | I2C SDA | Shared bus: Notecard + MCP23017 |
 | 22 | I2C SCL | Shared bus: Notecard + MCP23017 |
-| 13 | UART TX → Pi Zero | Phase 6+ |
-| 14 | UART RX ← Pi Zero | Phase 6+ |
-| 23 | MG996R trapdoor lifter servo (PWM, needs native pin like the others)
+| 16 | UART RX ← Pi Zero | Phase 6+. UART2 default RX pin |
+| 17 | UART TX → Pi Zero | Phase 6+. UART2 default TX pin |
+| 27 | Spare | Free output-capable GPIO, reserved for future expansion |
 
-**14 of ~25 usable native GPIO in use.**
+**15 of ~25 usable native GPIO in use. No free output-capable GPIO remaining except GPIO27 (spare). GPIO34/35/36/39 are input-only and cannot drive outputs.**
 
 Avoided: GPIO 0, 2, 5, 12, 15 (strapping pins), GPIO 1, 3 (UART0 — reserved for USB programming/serial monitor), GPIO 6-11 (internal SPI flash — never use).
 
