@@ -54,13 +54,16 @@ Expander pin assignments:
 | GPA4 | Signal light — green (valid) |
 | GPA5 | Signal light — red (invalid) |
 | GPA6 | White illumination (plug into MOSFET for 5V LED strip) |
-| GPA7 | Gate actuator A — IN1 |
-| GPB0 | Gate actuator A — IN2 |
-| GPB1 | Gate actuator B — IN1 |
-| GPB2 | Gate actuator B — IN2 |
-| GPB3 | Signal light - blue (jackpot) |
-| GPB4 | Solenoid logic line, via IRF520 |
-| GPB5-GPB7 | Spare (3 free) |
+| GPA7 | SPARE
+| GPB0 | Gate actuator A — IN1 | 
+| GPB1 | Gate actuator A — IN2 |
+| GPB2 | Gate actuator B — IN1 |
+| GPB3 | Gate actuator B — IN2 | 
+| GPB4 | Signal light - blue (jackpot) |
+| GPB5 | Solenoid logic line, via MOSFET (blue/green thing) | 
+| GPB6 | SPARE
+| GPB7 | SPARE
+| GPA7, GPB6-GPB7 | Spare (3 free) |
 
 ## Power Domains
 
