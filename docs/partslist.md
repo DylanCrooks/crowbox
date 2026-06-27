@@ -20,7 +20,7 @@ Open this file with Ctrl+Shift+V (markdown preview) to get clickable checkboxes.
 
 ### Resistor kit, assorted
 - [x] Ordered
-- [ ] Received
+- [x] Received
 
 ### USB-C cable (match your board's port)
 - [x] Received
@@ -46,8 +46,8 @@ Open this file with Ctrl+Shift+V (markdown preview) to get clickable checkboxes.
 - [x] Received
 
 ### Load cell 1kg + HX711 — reward chamber (kit #2, identical part)
-- [ ] Ordered
-- [ ] Received
+- [x] Ordered
+- [x] Received
 
 ### Load cell 5kg + HX711 (unnecessary now, bought already)
 
@@ -69,16 +69,16 @@ PAUSED — deciding on approach, revisit before Phase 1 sensor work wraps up
 - [x] Received
 
 ### MG996R servo (2-pack — 1 for trapdoor lifter, 1 spare)
-- [ ] Ordered
-- [ ] Received
+- [x] Ordered
+- [x] Received
 
-### Mini 12V linear actuator, 50mm stroke (x2 — gate lift)
+### Mini 12V linear actuator, 50mm stroke (x2 — gate lift) 
 - [ ] Ordered
 - [ ] Received
 
 ### L298N dual H-bridge driver module (for 2x linear actuators)
-- [ ] Ordered
-- [ ] Received
+- [x] Ordered
+- [x] Received
 
 ---
 
@@ -88,13 +88,13 @@ PAUSED — deciding on approach, revisit before Phase 1 sensor work wraps up
 - [ ] Ordered
 - [ ] Received
 
-### MOSFET driver module, 2-pack (1 for solenoid, 1 for LED strip switching)
-- [ ] Ordered
-- [ ] Received
+### MOSFET driver module , 2-pack (1 for solenoid, 1 for LED strip switching)
+- [x] Ordered
+- [x] Received
 
 ### 1N4007 flyback diode (protects solenoid MOSFET from inductive kickback)
-- [ ] Ordered
-- [ ] Received
+- [x] Ordered
+- [x] Received
 
 (reuses existing deposit-chamber load cell — no new weight sensor needed)
 
@@ -106,7 +106,7 @@ PAUSED — deciding on approach, revisit before Phase 1 sensor work wraps up
 - [x] Received
 
 ### Passive buzzer module (have — confirm in hand)
-- [ ] Received
+- [x] Received
 
 ### 5V COB LED strip (deposit chamber lighting, aids future CV)
 - [ ] Ordered
@@ -117,36 +117,36 @@ PAUSED — deciding on approach, revisit before Phase 1 sensor work wraps up
 ## Logic / I/O expansion
 
 ### MCP23017 I2C GPIO expander breakout
-- [ ] Ordered
-- [ ] Received
+- [x] Ordered
+- [x] Received
 
 ---
 
 ## Power
 
 ### 12V LiFePO4 battery, 8Ah
-- [ ] Ordered
-- [ ] Received
+- [x] Ordered
+- [x] Received
 
 ### 12V 2A wall adapter, bare wire (for bench testing before battery is wired)
 - [ ] Ordered
 - [ ] Received
 
 ### Adjustable buck converter w/ voltmeter display, 12V→5V (2-pack — 1 for main 5V rail, 1 as a voltage-capping regulator for the actuator/solenoid line, or spare)
-- [ ] Ordered
-- [ ] Received
+- [x] Ordered
+- [x] Received
 
 ### Inline fuse holder, waterproof (ecocstm, 2-pack)
-- [ ] Ordered
-- [ ] Received
+- [x] Ordered
+- [x] Received
 
 ### ATC/ATO blade fuse assortment kit (55pc, 2A–40A — use 5A for the 12V line)
-- [ ] Ordered
-- [ ] Received
+- [x] Ordered
+- [x] Received
 
 ### WAGO 221 lever connector assortment (2/3/5-conductor mixed pack)
-- [ ] Ordered
-- [ ] Received
+- [x] Ordered
+- [x] Received
 
 ### ~~DC barrel jack to screw terminal adapter~~
 Not needed — using bare wire adapter instead. Keep this line only as a fallback if bare wire ends up being impractical to terminate cleanly; if so, switch to a 5.5x2.1mm barrel adapter and revisit this part.
