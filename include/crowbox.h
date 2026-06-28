@@ -1,32 +1,43 @@
 #include <stdint.h>
+#include <stdbool.h>
 #pragma once
 
 
-typedef enum { STAGE_1_PRESENCE_TRIGGER, STAGE_2_OBJECT_DEPOSIT } training_stage_t;
-typedef enum { SCHEDULE_CONTINUOUS, SCHEDULE_RATIO_3_4, SCHEDULE_RATIO_1_2, SCHEDULE_RATIO_1_3 } reward_schedule_t;
+
+// Training stage - controls state machine behavior
+typedef enum {
+    // Stage 1: Familiarity and basic depositing
+    // Any valid weight accepted, preset thins gradually
+    STAGE_1A_DISCOVERY,           // preset 100%, HVT 100%, no jackpot
+    STAGE_1B_PRESET_75,           // preset 75%,  HVT 100%, no jackpot
+    STAGE_1C_PRESET_50,           // preset 50%,  HVT 100%, no jackpot
+    STAGE_1D_PRESET_25,           // preset 25%,  HVT 100%, no jackpot
+    STAGE_1E_NO_PRESET,           // preset 0%,   HVT 100%, no jackpot
+                                   // gate stays closed on PIR from here on
+
+    // Stage 2: Shaping (object discrimination)
+    // v1 = coin weight range only
+    // future = CV-based criteria at increasing strictness via stage1_validation_strictness
+    // continuous reinforcement required throughout, no jackpot
+    STAGE_2_SHAPING,              // preset 0%, HVT 100%, jackpot 0%
+
+    // Stage 3: VR thinning + jackpot introduction
+    // jackpot introduced at start and held constant while HVT thins
+    STAGE_3A_HVT_75,              // preset 0%, HVT 75%, jackpot 25%
+    STAGE_3B_HVT_50,              // preset 0%, HVT 50%, jackpot 25%
+    STAGE_3C_HVT_25,              // preset 0%, HVT 25%, jackpot 25%
+    STAGE_3D_HVT_GONE,            // preset 0%, HVT 0%,  jackpot 25%
+
+
+    STAGE_COUNT                    // always last — used for STAGE_CONFIGS array sizing
+} training_stage_t;
+//stage config - stores reward schedule and such. 
+
 typedef enum { REWARD_TYPE_LVT, REWARD_TYPE_HVT, REWARD_TYPE_EHVT } reward_type_t;
-typedef enum { DISPENSE_REASON_PRESET, DISPENSE_REASON_VOD, DISPENSE_REASON_JACKPOT } dispense_reason_t;
 typedef enum { TONE_REJECT, TONE_ACCEPT, TONE_JACKPOT } tone_id_t;
 
-typedef struct { uint8_t dispenser_id; uint8_t dose_count; } reward_item_t;
-typedef struct { reward_item_t items[4]; uint8_t item_count; } reward_bundle_t;
-
-typedef struct {
-    crowbox_event_t     type;
-    int32_t              value;
-    weight_sensor_id_t    source;     // for WEIGHT_* events
-    dispense_reason_t      reason;     // for DISPENSE_COMPLETE / REWARD_GRANTED events
-    int64_t                 timestamp_ms;
-} crowbox_event_msg_t;
-// Training stage - controls state machine behavior
 
 
-typedef enum {
-    SCHEDULE_CONTINUOUS,   // every valid deposit rewarded
-    SCHEDULE_RATIO_3_4,
-    SCHEDULE_RATIO_1_2,
-    SCHEDULE_RATIO_1_3
-} reward_schedule_t;
 
 // All possible states the box can be in
 typedef enum {
@@ -47,6 +58,7 @@ typedef enum {
     STATE_TRAPDOOR_OPENING,     // MG996R lifts door
     STATE_TRAPDOOR_CLOSING,
     STATE_TRAPDOOR_LOCKING,     // solenoid re-engages
+    STATE_PRESET_WAIT,            // waiting for animal to leave before restocking
     STATE_LOGGING,            // sending event to Notecard
     STATE_COOLDOWN,           // brief reset
     STATE_ERROR               // sensor fault
@@ -55,43 +67,69 @@ typedef enum {
 // All events that can move the state machine forward
 typedef enum {
     EVENT_PIR_TRIPPED,               // motion detected, wake up, check stage, if stage 2, reward immediately, open gate, close gate, dispense reward again (w/out opening gate). if stage 3 or 4, wait for weight change
+    EVENT_PIR_CLEARED,                    // animal left
 
+    EVENT_DEPOSIT_WEIGHT_BASELINE,            // chamber empty
+    EVENT_DEPOSIT_WEIGHT_DETECTED,            // weight changed above baseline, something is there
+    EVENT_DEPOSIT_WEIGHT_SETTLED,             // weight stable for a few seconds, ready for classification
 
-    EVENT_WEIGHT_BASELINE,            // chamber empty
-    EVENT_WEIGHT_DETECTED,            // weight changed above baseline, something is there
-    EVENT_WEIGHT_SETTLED,             // weight stable for a few seconds, ready for classification
+    EVENT_REWARD_TRAY_EMPTY,
+    EVENT_REWARD_TRAY_LOADED,
+
 
     EVENT_OBJECT_VALID,              //classified as valid, sound and green light, roll for reward
     EVENT_OBJECT_INVALID,             //classified as invalid, buzzer and red light, no reward
                                     // go to CPU if valid, check stage, check schedule, do reward roll.
-    EVENT_REWARD_GRANTED,             // schedule roll: pay out, 
-    EVENT_REWARD_WITHHELD,            // schedule roll: skip this time
+    EVENT_REWARD_GRANTED,             // schedule roll: pay out
+    EVENT_REWARD_WITHHELD,
     EVENT_JACKPOT_GRANTED,             // jackpot reward (extra reward for valid object)
-    EVENT_JACKPOT_WITHHELD,            // jackpot reward withheld (extra reward for valid object)
 
     EVENT_DISPENSE_COMPLETE,           
     EVENT_GATE_OPEN_COMPLETE,
     EVENT_GATE_CLOSE_COMPLETE,
+    EVENT_TRAPDOOR_CLEAR_COMPLETE,
 
     EVENT_LOG_COMPLETE,
-    EVENT_TIMEOUT,                    // animal left, no deposit
+    EVENT_TIMEOUT,                        // go to idle after
 
-    EVENT_HOPPER_EMPTY,               // value field = which hopper (0-3)
+    EVENT_HOPPER_EMPTY,          // value = hopper id (0-3)
     EVENT_BATTERY_LOW,
-    EVENT_STAGE_CHANGED               // logging only, not control flow
+    EVENT_STAGE_CHANGED          // logging only
 } crowbox_event_t;
 
-typedef enum {
-    SENSOR_DEPOSIT_CHAMBER,
-    SENSOR_REWARD_CHAMBER
-} weight_sensor_id_t;
+
+/*
+EVENT_PIR_CLEARED fires
+→ STATE_AWAKE_WATCHING → STATE_PRESET_WAIT (new state)
+→ wait 60-120 seconds (configurable, giving stragglers time to leave)
+→ check reward chamber load cell — if empty, fire LVT servo
+→ if stage 1, also trigger object dispenser (or flag for manual placement)
+→ gate safety close if still open
+→ STATE_IDLE (deep sleep)
+*/
+
+typedef struct { uint8_t dispenser_id; uint8_t dose_count; } reward_item_t;
+typedef struct { reward_item_t items[4]; uint8_t item_count; } reward_bundle_t;
+typedef struct {
+    uint8_t preset_chance_pct;
+    uint8_t hvt_chance_pct;
+    uint8_t jackpot_chance_pct;
+    bool    gate_opens_on_pir;
+} stage_config_t;
+
+
+extern const stage_config_t STAGE_CONFIGS[];
+extern const size_t STAGE_CONFIGS_COUNT;
 
 // A single event posted to the event bus
 typedef struct {
     crowbox_event_t    type;
     int32_t             value;     // weight in grams, hopper id, etc — meaning depends on type
-    weight_sensor_id_t  source;    // which load cell, only relevant for WEIGHT_* events
     int64_t             timestamp_ms;
 } crowbox_event_msg_t;
+
+
+
+
 
 
