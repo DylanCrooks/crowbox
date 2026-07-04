@@ -9,10 +9,6 @@
 
 static const char *TAG = "crowbox";
 
-static uint32_t angle_to_duty(int angle) {
-        uint32_t us = 500 + (angle * (2400 - 500) / 180);
-        return (us * 8191) / 20000;
-    };
 
 void app_main(void) {
     ESP_LOGI(TAG, "CrowBox firmware starting");
