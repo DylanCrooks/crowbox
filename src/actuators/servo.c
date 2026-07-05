@@ -36,8 +36,13 @@ void servo_doser_dispense(uint8_t hopper_id) {
 // servo_trapdoor_set_angle
 // Same as servo_set_angle but hardcoded to LEDC_CHAN_SERVO_TRAPDOOR (channel 4).
 // Called by solenoid.c's trapdoor sequence — not for hopper dosers.
-// CLAUDE TODO: define TRAPDOOR_OPEN_ANGLE and TRAPDOOR_CLOSED_ANGLE — tune on hardware.
-void servo_trapdoor_set_angle(int angle) {}
+// CLAUDE TODO: define TRAPDOOR_OPEN_ANGLE and TRAPDOOR_CLOSED_ANGLE at top of file — tune on hardware.
+void servo_trapdoor_set_angle(int angle) {
+    // CLAUDE TODO: uint32_t duty = angle_to_duty(angle);
+    // CLAUDE TODO: ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHAN_SERVO_TRAPDOOR, duty)
+    // CLAUDE TODO: ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHAN_SERVO_TRAPDOOR)
+    // Note: LEDC_CHAN_SERVO_TRAPDOOR is defined in pinout.h — same LEDC_TIMER_0 as the hopper servos
+}
 
 void servo_init(void) {
 ledc_timer_config_t timer = {
