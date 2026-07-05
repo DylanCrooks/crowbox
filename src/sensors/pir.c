@@ -49,7 +49,8 @@ void pir_check_departure(void){
     if ((current_time - s_last_trigger_microsec) > (DEPARTURE_DEBOUNCE_MS * 1000)) {
         s_crow_present = false;
         crowbox_event_msg_t crow_depart_msg = {
-            .timestamp_ms = (current_time * 1000),
+            // CLAUDE TODO: this should divide by 1000, not multiply — current_time is µs, field is ms
+            .timestamp_ms = (current_time / 1000),
             .type = EVENT_PIR_CLEARED,
             .value = 0,
         };
