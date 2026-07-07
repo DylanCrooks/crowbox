@@ -1,6 +1,8 @@
 #pragma once
 #include <stdint.h>
 
+
+
 typedef enum {
     WEIGHT_SENSOR_DEPOSIT,   // HX711 #1 — GPIO32 (SCK), GPIO33 (DOUT)
     WEIGHT_SENSOR_REWARD     // HX711 #2 — GPIO25 (SCK), GPIO26 (DOUT)
