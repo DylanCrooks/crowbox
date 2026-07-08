@@ -19,4 +19,4 @@ void mcp23017_set_pin(uint8_t port, uint8_t bit, bool high);
 // mcp23017_read_porta
 // Read the current logic levels on port A (GPIOA register 0x12).
 // Used to check IR beam inputs (bits 0-3). Returns the raw byte.
-uint8_t mcp23017_read_porta(void);
+uint8_t mcp23017_read_port(uint8_t port);

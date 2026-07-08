@@ -1,5 +1,6 @@
 #include "mcp23017.h"
-#include "driver/i2c.h"
+#include "i2c_bus.h"
+#include "driver/i2c_master.h"
 #include "freertos/FreeRTOS.h"
 
 // Shadow registers — local copies of what was last written to the chip.
@@ -8,23 +9,68 @@
 static uint8_t s_shadow_a = 0x00;
 static uint8_t s_shadow_b = 0x00;
 
-// mcp23017_init
-// Step 1: configure i2c_config_t struct (mode, sda_io_num, scl_io_num, clk_speed = 400000)
-// Step 2: call i2c_param_config(I2C_NUM_0, &conf)
-// Step 3: call i2c_driver_install(I2C_NUM_0, I2C_MODE_MASTER, 0, 0, 0)
-// Step 4: write MCP_REG_IODIRA (0x00) with value 0x0F  — lower nibble inputs, upper nibble outputs
-// Step 5: write MCP_REG_IODIRB (0x01) with value 0xE0  — bits 0-4 outputs, bits 5-7 inputs
-void mcp23017_init(void) {}
+static i2c_master_dev_handle_t s_mcp_handle;
+
+void mcp23017_init(void) {
+    i2c_master_bus_handle_t bus_handle = i2c_bus_get_handle();
+    const i2c_device_config_t mcp_config = {
+        .dev_addr_length = I2C_ADDR_BIT_LEN_7,
+        .device_address = 0x20,
+        .scl_speed_hz = 100000 //mcp can go higher, esp32 can go higher, but notecard can go max 100kHz
+    };
+    i2c_master_bus_add_device(bus_handle, &mcp_config, &s_mcp_handle);
+    const uint8_t iodira_buf[2] = {MCP_REG_IODIRA, 0x0F}; // set gpioa0-3 as input, rest as outputs
+    
+    i2c_master_transmit(s_mcp_handle, iodira_buf, 2, pdMS_TO_TICKS(100)); 
+    const uint8_t iodirb_buf[2] = {MCP_REG_IODIRB, 0xE0}; //set 5,6,7 as input, rest outputs
+    i2c_master_transmit(s_mcp_handle, iodirb_buf, 2, pdMS_TO_TICKS(100));
+}
 
 // mcp23017_set_pin
 // If high:  shadow |=  (1 << bit)
 // If low:   shadow &= ~(1 << bit)
-// Determine which shadow (A or B) from port argument.
-// Write updated shadow to MCP_REG_OLATA or MCP_REG_OLATB via I2C.
-// I2C write sequence: start → device address (I2C_ADDR_MCP23017 << 1 | write) → register → data → stop
-void mcp23017_set_pin(uint8_t port, uint8_t bit, bool high) {}
+//shadow keeps track of output pin state so we don't write 0 to output accidentally.
+void mcp23017_set_pin(bool port , uint8_t bit, bool high) {
+    if (!port){
+        if (high) {
+            s_shadow_a |= (1 << bit);
+        }
+        else if (!high) {
+            s_shadow_a &= ~(1 << bit);
+        }
+        const uint8_t gpioa_buf[2] = {MCP_REG_GPIOA, s_shadow_a};
+        i2c_master_transmit(s_mcp_handle, gpioa_buf, 2, pdMS_TO_TICKS(100));
+    }
+    else if (port) {
+        if (high) {
+            s_shadow_b |= (1 << bit);
+        }
+        else if (!high){
+            s_shadow_b &= ~(1 << bit);
+        }
+        const uint8_t gpiob_buf[2] = {MCP_REG_GPIOB, s_shadow_b};
+        i2c_master_transmit(s_mcp_handle, gpiob_buf, 2, pdMS_TO_TICKS (100));
+
+    };
+}
 
 // mcp23017_read_porta
 // I2C write the register address MCP_REG_GPIOA (0x12), then I2C read 1 byte back.
 // Return that byte. Caller checks individual bits with (result >> bit) & 1.
-uint8_t mcp23017_read_porta(void) { return 0; }
+uint8_t mcp23017_read_port(bool port) {
+    uint8_t result;
+    uint8_t reg;
+    if (!port) {
+        reg = MCP_REG_GPIOA;
+        if ((i2c_master_transmit_receive(s_mcp_handle, &reg, 1, &result, 1, pdMS_TO_TICKS(100))) == ESP_OK) {
+            return result;
+        };
+    }
+    else if (port) {
+        reg = MCP_REG_GPIOB;
+        if ((i2c_master_transmit_receive(s_mcp_handle, &reg, 1, &result, 1, pdMS_TO_TICKS(100))) == ESP_OK) {
+            return result;
+        }
+    }
+    return 0;
+}
