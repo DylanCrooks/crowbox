@@ -73,8 +73,8 @@ PAUSED — deciding on approach, revisit before Phase 1 sensor work wraps up
 - [x] Received
 
 ### Mini 12V linear actuator, 50mm stroke (x2 — gate lift) 
-- [ ] Ordered
-- [ ] Received
+- [x] Ordered
+- [x] Received
 
 ### L298N dual H-bridge driver module (for 2x linear actuators)
 - [x] Ordered
@@ -129,8 +129,8 @@ PAUSED — deciding on approach, revisit before Phase 1 sensor work wraps up
 - [x] Received
 
 ### 12V 2A wall adapter, bare wire (for bench testing before battery is wired)
-- [ ] Ordered
-- [ ] Received
+- [x] Ordered
+- [x] Received
 
 ### Adjustable buck converter w/ voltmeter display, 12V→5V (2-pack — 1 for main 5V rail, 1 as a voltage-capping regulator for the actuator/solenoid line, or spare)
 - [x] Ordered

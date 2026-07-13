@@ -1,5 +1,5 @@
+#pragma once
 #include "driver/i2c_master.h"
-#include "driver/i2c_slave.h"
 #include "freertos/FreeRTOS.h"
 
 void i2c_bus_init();
