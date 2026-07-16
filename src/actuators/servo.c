@@ -7,7 +7,7 @@
 
 #define DISPENSE_ANGLE 1
 // CLAUDE TODO: wrap in pdMS_TO_TICKS() so it's explicitly milliseconds: pdMS_TO_TICKS(1000)
-#define DISPENSE_TICKS 1000
+#define DISPENSE_TICKS pdMS_TO_TICKS(1000)
 #define CLOSED_ANGLE 0 
 /*
  * Servo control using ESP32 LEDC PWM
@@ -33,15 +33,14 @@ void servo_doser_dispense(uint8_t hopper_id) {
 
 };
 
-// servo_trapdoor_set_angle
-// Same as servo_set_angle but hardcoded to LEDC_CHAN_SERVO_TRAPDOOR (channel 4).
-// Called by solenoid.c's trapdoor sequence — not for hopper dosers.
-// CLAUDE TODO: define TRAPDOOR_OPEN_ANGLE and TRAPDOOR_CLOSED_ANGLE at top of file — tune on hardware.
+// CLAUDE TODO: tune TRAPDOOR_OPEN_ANGLE and TRAPDOOR_CLOSED_ANGLE on hardware
+#define TRAPDOOR_OPEN_ANGLE     90
+#define TRAPDOOR_CLOSED_ANGLE   0
+
 void servo_trapdoor_set_angle(int angle) {
-    // CLAUDE TODO: uint32_t duty = angle_to_duty(angle);
-    // CLAUDE TODO: ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHAN_SERVO_TRAPDOOR, duty)
-    // CLAUDE TODO: ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHAN_SERVO_TRAPDOOR)
-    // Note: LEDC_CHAN_SERVO_TRAPDOOR is defined in pinout.h — same LEDC_TIMER_0 as the hopper servos
+    uint32_t duty = angle_to_duty(angle);
+    ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHAN_SERVO_TRAPDOOR, duty);
+    ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHAN_SERVO_TRAPDOOR);
 }
 
 void servo_init(void) {

@@ -2,6 +2,7 @@
 #include "i2c_bus.h"
 #include "driver/i2c_master.h"
 #include "freertos/FreeRTOS.h"
+#include "esp_log.h"
 
 // Shadow registers — local copies of what was last written to the chip.
 // Rule: never read-modify-write the MCP23017 over I2C.
@@ -15,15 +16,21 @@ void mcp23017_init(void) {
     i2c_master_bus_handle_t bus_handle = i2c_bus_get_handle();
     const i2c_device_config_t mcp_config = {
         .dev_addr_length = I2C_ADDR_BIT_LEN_7,
-        .device_address = 0x20,
+        .device_address = I2C_ADDR_MCP23017,
         .scl_speed_hz = 100000 //mcp can go higher, esp32 can go higher, but notecard can go max 100kHz
     };
     i2c_master_bus_add_device(bus_handle, &mcp_config, &s_mcp_handle);
     const uint8_t iodira_buf[2] = {MCP_REG_IODIRA, 0x0F}; // set gpioa0-3 as input, rest as outputs
     
-    i2c_master_transmit(s_mcp_handle, iodira_buf, 2, pdMS_TO_TICKS(100)); 
+    esp_err_t reta = i2c_master_transmit(s_mcp_handle, iodira_buf, 2, pdMS_TO_TICKS(100));
+    ESP_LOGI("mcp", "IODIRA write: %s", esp_err_to_name(reta));
+
+    // i2c_master_transmit(s_mcp_handle, iodira_buf, 2, pdMS_TO_TICKS(100)); 
     const uint8_t iodirb_buf[2] = {MCP_REG_IODIRB, 0xE0}; //set 5,6,7 as input, rest outputs
-    i2c_master_transmit(s_mcp_handle, iodirb_buf, 2, pdMS_TO_TICKS(100));
+    esp_err_t retb = i2c_master_transmit(s_mcp_handle, iodirb_buf, 2, pdMS_TO_TICKS(100));
+    ESP_LOGI("mcp", "IODIRB write: %s", esp_err_to_name(retb));
+
+    //i2c_master_transmit(s_mcp_handle, iodirb_buf, 2, pdMS_TO_TICKS(100));
 }
 
 // mcp23017_set_pin
@@ -39,7 +46,10 @@ void mcp23017_set_pin(bool port , uint8_t bit, bool high) {
             s_shadow_a &= ~(1 << bit);
         }
         const uint8_t gpioa_buf[2] = {MCP_REG_GPIOA, s_shadow_a};
-        i2c_master_transmit(s_mcp_handle, gpioa_buf, 2, pdMS_TO_TICKS(100));
+        esp_err_t ret = i2c_master_transmit(s_mcp_handle, gpioa_buf, 2, pdMS_TO_TICKS(100));
+        ESP_LOGI("mcp", "GPIOA write: %s", esp_err_to_name(ret));
+
+        //i2c_master_transmit(s_mcp_handle, gpioa_buf, 2, pdMS_TO_TICKS(100));
     }
     else if (port) {
         if (high) {

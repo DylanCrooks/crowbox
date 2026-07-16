@@ -14,9 +14,8 @@ void mcp23017_init(void);
 // port: 0 = port A (GPIOA), 1 = port B (GPIOB).
 // bit: 0-7 — use MCP_BIT_* constants from pinout.h.
 // Updates the internal shadow byte then writes the full byte to the chip via I2C.
-void mcp23017_set_pin(uint8_t port, uint8_t bit, bool high);
+void mcp23017_set_pin(bool port, uint8_t bit, bool high);
 
 // mcp23017_read_porta
-// Read the current logic levels on port A (GPIOA register 0x12).
-// Used to check IR beam inputs (bits 0-3). Returns the raw byte.
-uint8_t mcp23017_read_port(uint8_t port);
+// Read the current logic levels on port A or B (GPIOA register 0x12).
+uint8_t mcp23017_read_port(bool port);

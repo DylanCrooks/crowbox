@@ -85,8 +85,8 @@ PAUSED — deciding on approach, revisit before Phase 1 sensor work wraps up
 ## Trapdoor mechanism
 
 ### 12V solenoid lock (Bonsicoky, deadbolt for trapdoor)
-- [ ] Ordered
-- [ ] Received
+- [x] Ordered
+- [x] Received
 
 ### MOSFET driver module , 2-pack (1 for solenoid, 1 for LED strip switching)
 - [x] Ordered
@@ -109,8 +109,8 @@ PAUSED — deciding on approach, revisit before Phase 1 sensor work wraps up
 - [x] Received
 
 ### 5V COB LED strip (deposit chamber lighting, aids future CV)
-- [ ] Ordered
-- [ ] Received
+- [x] Ordered
+- [x] Received
 
 ---
 

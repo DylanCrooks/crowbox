@@ -1,7 +1,8 @@
 #include "solenoid.h"
 #include "mcp23017.h"
 #include "pinout.h"
-
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 
 #define SOLENOID_UNLOCK_TICKS pdMS_TO_TICKS(50)
 // solenoid_unlock
