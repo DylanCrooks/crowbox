@@ -8,3 +8,5 @@ typedef struct {
     uint8_t           stage1_validation_strictness;
     bool              auto_advance_stage;  // can disable for manual control
 } crowbox_config_t;
+
+extern crowbox_config_t g_config;

@@ -17,3 +17,5 @@ void gate_close(void);
 // Set all 4 direction pins LOW. Cuts power to both actuators.
 // Always call this after travel — don't leave motor stalled against end stop.
 void gate_stop(void);
+
+bool gate_is_open(void);

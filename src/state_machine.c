@@ -14,7 +14,38 @@
 #include "freertos/task.h"
 #include "esp_log.h"
 
+
 #define TAG "state_machine"
+
+static crowbox_state_t s_current_state = STATE_IDLE;
+static bool s_crow_departed = false;
+static bool s_object_in_chamber = false;
+static bool s_deposit_logged = false;
+static int64_t s_visit_start_ms = 0;
+
+
+static const char *state_name(crowbox_state_t s) {
+    switch (s) {
+        case STATE_IDLE:                return "IDLE";
+        case STATE_PIR_TRIPPED:         return "PIR_TRIPPED";
+        case STATE_DEPOSIT_DETECTED:    return "DEPOSIT_DETECTED";
+        case STATE_VALIDATING:          return "VALIDATING";
+        case STATE_DISPENSING:          return "DISPENSING";
+        case STATE_TRAPDOOR_UNLOCKING:  return "TRAPDOOR_UNLOCKING";
+        case STATE_TRAPDOOR_OPENING:    return "TRAPDOOR_OPENING";
+        case STATE_TRAPDOOR_CLOSING:    return "TRAPDOOR_CLOSING";
+        case STATE_TRAPDOOR_LOCKING:    return "TRAPDOOR_LOCKING";
+        case STATE_COOLDOWN:            return "COOLDOWN";
+        case STATE_LOGGING:             return "LOGGING";
+        case STATE_ERROR:               return "ERROR";
+        default:                        return "UNKNOWN";
+    }
+}
+
+static void transition_to(crowbox_state_t new_state) {
+    ESP_LOGI(TAG, "state: %s -> %s", state_name(s_current_state), state_name(new_state));
+    s_current_state = new_state;
+}
 
 // handle_pir_tripped
 // Called when a crow arrives (first PIR trigger of a visit).
@@ -23,6 +54,22 @@
 // Log the event.
 static void handle_pir_tripped(crowbox_event_msg_t *msg) {
     ESP_LOGI(TAG, "PIR tripped");
+    
+    switch (s_current_state) {
+        case STATE_IDLE:
+            if (STAGE_CONFIGS[g_config.stage].gate_opens_on_pir) {
+            gate_open();
+            }                
+            transition_to(STATE_PIR_TRIPPED);
+            break;
+        case STATE_ERROR:
+            vTaskDelay(pdMS_TO_TICKS(5000));
+            esp_restart();
+            break;
+    }
+    
+
+
 }
 
 // handle_pir_cleared
@@ -34,6 +81,7 @@ static void handle_pir_tripped(crowbox_event_msg_t *msg) {
 // Otherwise: sleep_enter_deep().
 static void handle_pir_cleared(crowbox_event_msg_t *msg) {
     ESP_LOGI(TAG, "PIR cleared — crow departed");
+    s_crow_departed = true;
 }
 
 // handle_deposit_weight_detected
@@ -41,6 +89,15 @@ static void handle_pir_cleared(crowbox_event_msg_t *msg) {
 // Start a settle timer — wait for weight to stabilize before validating.
 static void handle_deposit_weight_detected(crowbox_event_msg_t *msg) {
     ESP_LOGI(TAG, "deposit weight detected: %ld g", msg->value);
+    switch(s_current_state) {
+        case STATE_PIR_TRIPPED: 
+            transition_to(STATE_DEPOSIT_DETECTED); 
+            break;
+        case STATE_COOLDOWN:
+            ESP_LOGW(TAG, "deposit weight detected during cooldown state");
+            //transition_to(STATE_TRAPDOOR_UNLOCKING) ??
+            break;
+    }
 }
 
 // handle_deposit_weight_settled
@@ -49,6 +106,13 @@ static void handle_deposit_weight_detected(crowbox_event_msg_t *msg) {
 // If invalid: post EVENT_OBJECT_INVALID.
 static void handle_deposit_weight_settled(crowbox_event_msg_t *msg) {
     ESP_LOGI(TAG, "deposit weight settled");
+    switch (s_current_state) {
+        case STATE_VALIDATING:
+        classify_object();
+        transition_to(STATE_DISPENSING);
+        break;
+    
+    }
 }
 
 // handle_object_valid

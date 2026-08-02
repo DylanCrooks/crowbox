@@ -1,6 +1,19 @@
 #include "config.h"
 #include "crowbox.h"
 
+crowbox_config_t g_config;
+
+crowbox_config_t g_config = {
+    .stage = STAGE_1A_DISCOVERY,
+    .successful_deposit_count = 0,
+    .departure_debounce_ms = 30000,
+    .stage1_validation_strictness = 0,
+    .auto_advance_stage = false,
+};
+//load from NVS
+void config_init(){
+};
+
 const stage_config_t STAGE_CONFIGS[STAGE_COUNT] = {
     [STAGE_1A_DISCOVERY]  = {100, 100,  0, true},
     [STAGE_1B_PRESET_75]  = { 75, 100,  0, true},

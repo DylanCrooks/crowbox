@@ -11,11 +11,12 @@
 #include "buzzer.h"
 #include "event_bus.h"
 #include "state_machine.h"
+#include "tests.h"
 
 static const char *TAG = "crowbox";
 
 void app_main(void) {
-    ESP_LOGI(TAG, "CrowBox starting — solenoid + MG996R servo test");
+    ESP_LOGI(TAG, "CrowBox starting");
 
     i2c_bus_init();
     mcp23017_init();
@@ -27,32 +28,9 @@ void app_main(void) {
     event_bus_init();
     state_machine_start();
 
-    int cycle = 0;
-    while (1) {
-        // Solenoid: unlock every 10s, hold 500ms (long enough to retract, short enough
-        // to avoid heat buildup), then lock and wait for flyback to dissipate before next cycle
-        if (cycle % 10 == 0) {
-            ESP_LOGI("solenoid", "unlocking");
-            solenoid_unlock();               // sets GPB4 high, already has 50ms delay inside
-            vTaskDelay(pdMS_TO_TICKS(450));  // hold energized for 500ms total (50 inside + 450 here)
-            ESP_LOGI("solenoid", "locking");
-            solenoid_lock();                 // sets GPB4 low, already has 50ms delay inside
-            vTaskDelay(pdMS_TO_TICKS(200));  // let flyback dissipate before next cycle
-        }
-
-        // Servo: sweep 0->90->0 every 5s
-        if (cycle % 5 == 0) {
-            ESP_LOGI("servo", "trapdoor -> 0 deg");
-            servo_trapdoor_set_angle(0);
-            vTaskDelay(pdMS_TO_TICKS(1000));
-            ESP_LOGI("servo", "trapdoor -> 90 deg");
-            servo_trapdoor_set_angle(90);
-            vTaskDelay(pdMS_TO_TICKS(1000));
-            ESP_LOGI("servo", "trapdoor -> 0 deg");
-            servo_trapdoor_set_angle(0);
-        }
-
-        cycle++;
-        vTaskDelay(pdMS_TO_TICKS(1000));
-    }
+    // Swap which test to run — comment all out for production
+    //test_solenoid_and_servo();
+    test_gate();
+    // test_weight_sensors();
+    // test_mcp23017_leds();
 }

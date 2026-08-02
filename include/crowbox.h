@@ -41,27 +41,18 @@ typedef enum { TONE_REJECT, TONE_ACCEPT, TONE_JACKPOT } tone_id_t;
 
 // All possible states the box can be in
 typedef enum {
-    STATE_IDLE,               // deep sleep, PIR watching
-    STATE_PIR_TRIPPED,        // motion detected, waking up
-    STATE_DEPOSIT_DETECTED,   // weight change detected
-    STATE_VALIDATING,         // checking what type of object is on the platform (CV or weight validation)
-    STATE_SIGNAL_VALID,          // object valid, green lights and reward sound
-    STATE_SIGNAL_INVALID,        // object invalid, red lights and buzzer
-    STATE_DISPENSING_SEED,         // object valid, feed tube servo fires
-    STATE_DISPENSING_HIGH_VALUE_FOOD,         // object valid, feed tube servo fires
-    STATE_DISPENSING_DRUGS,         // object valid, feed tube servo fires
-    STATE_DISPENSING_OBJECT,       // dispensing object (association training)
-    STATE_NO_REWARD,              // object valid but no food (variable ratio reward training)
-    STATE_GATE_OPENING,         // feed chamber gate opens 
-    STATE_GATE_CLOSING,        // feed chamber gate closing after delay, (send back to idle after)
+    STATE_IDLE,                 // sleeping, PIR watching
+    STATE_PIR_TRIPPED,          // crow present, gate open if stage allows
+    STATE_DEPOSIT_DETECTED,     // weight change in deposit chamber
+    STATE_VALIDATING,           // weighing/classifying deposit
+    STATE_DISPENSING,           // any food dispensing in progress
     STATE_TRAPDOOR_UNLOCKING,   // solenoid retracts
     STATE_TRAPDOOR_OPENING,     // MG996R lifts door
-    STATE_TRAPDOOR_CLOSING,
+    STATE_TRAPDOOR_CLOSING,     // MG996R lowers door
     STATE_TRAPDOOR_LOCKING,     // solenoid re-engages
-    STATE_PRESET_WAIT,            // waiting for animal to leave before restocking
-    STATE_LOGGING,            // sending event to Notecard
-    STATE_COOLDOWN,           // brief reset
-    STATE_ERROR               // sensor fault
+    STATE_COOLDOWN,             // crow departed, restocking, about to sleep
+    STATE_LOGGING,              // sending event to Notecard
+    STATE_ERROR                 // sensor fault
 } crowbox_state_t;
 
 // All events that can move the state machine forward
@@ -121,7 +112,7 @@ typedef struct {
 extern const stage_config_t STAGE_CONFIGS[];
 extern const size_t STAGE_CONFIGS_COUNT;
 
-// A single event posted to the event bus
+// crowbox_event_t type, int32_t value, int64_t timestamp
 typedef struct {
     crowbox_event_t    type;
     int32_t             value;     // weight in grams, hopper id, etc — meaning depends on type

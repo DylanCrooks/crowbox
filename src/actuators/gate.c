@@ -7,6 +7,9 @@
 // CLAUDE TODO: tune this on hardware — time for actuator to fully extend/retract
 #define GATE_TRAVEL_TICKS pdMS_TO_TICKS(2000)
 
+static bool s_gate_open = false;
+bool gate_is_open(void) { return s_gate_open; }
+
 // gate_open
 // mcp23017_set_pin calls for actuator A: IN1 high, IN2 low (port B, bits 0 and 1)
 // mcp23017_set_pin calls for actuator B: IN1 high, IN2 low (port B, bits 2 and 3)
@@ -18,6 +21,7 @@ void gate_open(void) {
     mcp23017_set_pin(1,MCP_BIT_ACT_B_IN2, false);
     vTaskDelay(GATE_TRAVEL_TICKS);
     gate_stop();
+    s_gate_open = true;
 }
 
 // gate_close
@@ -31,6 +35,7 @@ void gate_close(void) {
     mcp23017_set_pin(1, MCP_BIT_ACT_B_IN2, true);
     vTaskDelay(GATE_TRAVEL_TICKS);
     gate_stop();
+    s_gate_open = false;
 }
 
 // gate_stop

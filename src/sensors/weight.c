@@ -5,12 +5,24 @@
 #include "freertos/task.h"
 #include <stdint.h>
 #include "esp_timer.h"
+#include "event_bus.h"
 
 // CLAUDE TODO: fill in after calibration on hardware with a known reference weight
 #define TARE_OFFSET_DEPOSIT     0
 #define TARE_OFFSET_REWARD      0
 #define CALIBRATION_FACTOR      1.0f   // raw counts per gram — measure empirically
 #define TIMEOUT_MS 20000
+#define MINIMUM_OBJECT_WEIGHT_GRAMS 1.0f
+#define MINIMUM_REWARD_WEIGHT_GRAMS 1.0f
+#define BUFFER_ARRAY_SIZE 10
+#define VARIANCE_SETTLED_MAX 0.5f
+#define WEIGHT_TASK_STACK_SIZE 4096
+
+static void deposit_weight_read_task_function(void *arg);
+
+
+
+
 
 // weight_init
 // For the given sensor, configure:
@@ -36,6 +48,18 @@ void weight_init(weight_sensor_t sensor) {
     gpio_config(&weight_sck_conf);
     gpio_config(&weight_dout_conf);
     gpio_set_pull_mode(dout_pin, GPIO_PULLUP_ONLY);
+
+    if (sensor == WEIGHT_SENSOR_DEPOSIT) {
+    xTaskCreate(deposit_weight_read_task_function, "weight_deposit", WEIGHT_TASK_STACK_SIZE, NULL, 4, NULL);
+    }
+    /*
+    if (sensor == WEIGHT_SENSOR_REWARD) {
+    xTaskCreate()
+    }
+    
+    
+    */
+    
     
 }
 
@@ -98,3 +122,135 @@ float weight_read_grams(weight_sensor_t sensor) {
     float ans = (raw - tare) / CALIBRATION_FACTOR;
     return ans;
 };
+
+typedef struct {
+    float items[BUFFER_ARRAY_SIZE];
+    int front;
+    int rear;
+    int count;
+} Queue;
+
+static void init_queue(Queue *q) {
+    q->front = 0;
+    q->rear = 0;
+    q->count = 0;
+}
+
+static bool isFull(Queue *q){
+    if (q->count == BUFFER_ARRAY_SIZE) {
+        return true;
+    }
+    else {return false;}
+}
+
+static bool isEmpty(Queue *q){
+    if (q->count == 0) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+static bool enqueue(Queue *q, float value){
+    q->items[q->rear] = value;
+    q->rear = (q->rear + 1) % BUFFER_ARRAY_SIZE;
+    if (q->count < BUFFER_ARRAY_SIZE) {q->count++;}
+    return true;
+}
+
+static bool dequeue(Queue *q, float *out_value){
+    if (isEmpty(q)) {
+        return false;
+    }
+    else {
+        *out_value = q->items[q->front];
+        q->front = (q->front + 1) % BUFFER_ARRAY_SIZE;
+        q->count--;
+        return true;
+    }
+}
+
+static float buffer_avg(Queue *q) {
+    float avg = 0.0f;
+
+    for (int i = 0; i < BUFFER_ARRAY_SIZE; i++){
+        avg += q->items[i];
+    }
+    avg = avg / BUFFER_ARRAY_SIZE;
+    return avg;
+}
+
+static float variance_buffer(Queue *q) {
+    float avg = buffer_avg(q);
+    float sum = 0.0f;
+    for (int i = 0; i < BUFFER_ARRAY_SIZE; i++) {
+        sum += ((q->items[i] - avg)*(q->items[i] - avg)); 
+    }
+    return (sum/(BUFFER_ARRAY_SIZE-1));
+}
+
+
+static void deposit_weight_read_task_function(void *arg){
+    float weight;
+    Queue q;
+    init_queue(&q);
+    bool s_settled_posted = false;
+    bool s_detected_posted = false;
+    bool s_baseline_posted = false;
+    //need to store last x number of weights to find if weight has settled.
+    while(1){
+    weight = weight_read_grams(WEIGHT_SENSOR_DEPOSIT);
+        enqueue(&q, weight);
+        if ((q.count == BUFFER_ARRAY_SIZE) && (variance_buffer(&q) <= VARIANCE_SETTLED_MAX) && (buffer_avg(&q) >= MINIMUM_OBJECT_WEIGHT_GRAMS))
+        {
+            float avg = buffer_avg(&q);
+            crowbox_event_msg_t event_msg = {
+                .type         = EVENT_DEPOSIT_WEIGHT_SETTLED,
+                .value        = (int32_t)avg,   // truncates to whole grams — precision lost
+                .timestamp_ms = (esp_timer_get_time() / 1000),
+            };
+            if (!s_settled_posted) {
+            event_bus_post(event_msg);
+            s_settled_posted = true;
+            }
+        }
+        // deposit weight detected
+        else if (weight >= MINIMUM_OBJECT_WEIGHT_GRAMS)
+        {
+            crowbox_event_msg_t event_msg = {
+                .type         = EVENT_DEPOSIT_WEIGHT_DETECTED,
+                .value        = (int32_t)weight,
+                .timestamp_ms = (esp_timer_get_time() / 1000),
+            };
+            if (!s_detected_posted) {
+            event_bus_post(event_msg);
+            s_detected_posted = true;
+            s_baseline_posted = false;
+            }
+            
+        }
+        else if ((q.count == BUFFER_ARRAY_SIZE) && (variance_buffer(&q) <= VARIANCE_SETTLED_MAX) && (buffer_avg(&q) < MINIMUM_OBJECT_WEIGHT_GRAMS)) {
+            crowbox_event_msg_t event_msg = {
+                .type         = EVENT_DEPOSIT_WEIGHT_BASELINE,
+                .value        = 0,
+                .timestamp_ms = (esp_timer_get_time() / 1000),
+            };
+            if (!s_baseline_posted) {
+            event_bus_post(event_msg);
+            s_baseline_posted = true;
+            s_detected_posted = false;
+            s_settled_posted = false;
+            }
+        }
+        vTaskDelay(pdMS_TO_TICKS(100));
+    }
+}
+
+bool weight_reward_tray_is_empty(void) {
+    return weight_read_grams(WEIGHT_SENSOR_REWARD) < MINIMUM_REWARD_WEIGHT_GRAMS;
+}
+
+
+
+

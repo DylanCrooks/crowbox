@@ -9,3 +9,5 @@ void solenoid_unlock(void);
 // De-energize the solenoid (set MCP_BIT_SOLENOID low).
 // Spring pushes bolt back into locked position. Always call this after trapdoor closes.
 void solenoid_lock(void);
+
+bool solenoid_is_locked(void);

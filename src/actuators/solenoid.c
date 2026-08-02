@@ -5,6 +5,9 @@
 #include "freertos/task.h"
 
 #define SOLENOID_UNLOCK_TICKS pdMS_TO_TICKS(50)
+
+static bool s_locked = true;
+bool solenoid_is_locked(void) { return s_locked; }
 // solenoid_unlock
 // Call mcp23017_set_pin(1, MCP_BIT_SOLENOID, true).
 // Port B (1), bit MCP_BIT_SOLENOID (4 per pinout.h). Setting high energizes the coil.
@@ -12,13 +15,11 @@
 void solenoid_unlock(void) {
     mcp23017_set_pin(1,MCP_BIT_SOLENOID,true);
     vTaskDelay(SOLENOID_UNLOCK_TICKS);
+    s_locked = false;
 }
 
-// solenoid_lock
-// Call mcp23017_set_pin(1, MCP_BIT_SOLENOID, false).
-// De-energizes coil, spring re-engages bolt.
-// Add a short vTaskDelay after — spring needs time to seat fully before servo moves.
 void solenoid_lock(void) {
     mcp23017_set_pin(1, MCP_BIT_SOLENOID, false);
     vTaskDelay(pdMS_TO_TICKS(50));
+    s_locked = true;
 }

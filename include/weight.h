@@ -1,5 +1,6 @@
 #pragma once
 #include <stdint.h>
+#include <stdbool.h>
 
 
 
@@ -28,3 +29,7 @@ int32_t weight_read_raw(weight_sensor_t sensor);
 // tare_offset and calibration_factor are placeholder constants — calibrate on hardware
 //   with a known weight (e.g. tare empty, place 100g, record raw, divide: factor = raw/100).
 float weight_read_grams(weight_sensor_t sensor);
+
+// Returns true if the reward tray has no food on it (weight below noise floor).
+// Call on-demand from state machine — not a polling task.
+bool weight_reward_tray_is_empty(void);
