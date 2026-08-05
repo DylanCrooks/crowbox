@@ -43,6 +43,8 @@ void servo_trapdoor_set_angle(int angle) {
     ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHAN_SERVO_TRAPDOOR);
 }
 
+
+
 void servo_init(void) {
 ledc_timer_config_t timer = {
     .speed_mode = LEDC_LOW_SPEED_MODE,

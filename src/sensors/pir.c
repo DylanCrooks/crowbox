@@ -1,4 +1,3 @@
-// CLAUDE TODO: crowbox.h is included twice, remove one. Also remove stdio.h, stdint.h, task.h — not used here
 #include "freertos/FreeRTOS.h"
 #include "esp_log.h"
 #include "driver/gpio.h"
@@ -42,6 +41,19 @@ void pir_init(void){
     gpio_isr_handler_add((gpio_num_t)PIN_PIR, pir_isr, NULL);
     
 };
+void pir_post_arrival_event(void) {
+    s_last_trigger_microsec = esp_timer_get_time();
+    if (!s_crow_present) {
+        s_crow_present = true;
+        crowbox_event_msg_t msg = {
+            .timestamp_ms = s_last_trigger_microsec / 1000,
+            .type = EVENT_PIR_TRIPPED,
+            .value = 0
+        };
+        event_bus_post(msg);
+    }
+}
+
 void pir_check_departure(void){
     //poll every second to see if the time after crow's arrival is 
     if (!s_crow_present) {return;};
@@ -49,7 +61,6 @@ void pir_check_departure(void){
     if ((current_time - s_last_trigger_microsec) > (DEPARTURE_DEBOUNCE_MS * 1000)) {
         s_crow_present = false;
         crowbox_event_msg_t crow_depart_msg = {
-            // CLAUDE TODO: this should divide by 1000, not multiply — current_time is µs, field is ms
             .timestamp_ms = (current_time / 1000),
             .type = EVENT_PIR_CLEARED,
             .value = 0,

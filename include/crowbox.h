@@ -46,10 +46,6 @@ typedef enum {
     STATE_DEPOSIT_DETECTED,     // weight change in deposit chamber
     STATE_VALIDATING,           // weighing/classifying deposit
     STATE_DISPENSING,           // any food dispensing in progress
-    STATE_TRAPDOOR_UNLOCKING,   // solenoid retracts
-    STATE_TRAPDOOR_OPENING,     // MG996R lifts door
-    STATE_TRAPDOOR_CLOSING,     // MG996R lowers door
-    STATE_TRAPDOOR_LOCKING,     // solenoid re-engages
     STATE_COOLDOWN,             // crow departed, restocking, about to sleep
     STATE_LOGGING,              // sending event to Notecard
     STATE_ERROR                 // sensor fault
@@ -64,17 +60,9 @@ typedef enum {
     EVENT_DEPOSIT_WEIGHT_DETECTED,            // weight changed above baseline, something is there
     EVENT_DEPOSIT_WEIGHT_SETTLED,             // weight stable for a few seconds, ready for classification
 
-    EVENT_REWARD_TRAY_EMPTY,
-    EVENT_REWARD_TRAY_LOADED,
-
-
     EVENT_OBJECT_VALID,              //classified as valid, sound and green light, roll for reward
     EVENT_OBJECT_INVALID,             //classified as invalid, buzzer and red light, no reward
-                                    // go to CPU if valid, check stage, check schedule, do reward roll.
-    EVENT_REWARD_GRANTED,             // schedule roll: pay out
-    EVENT_REWARD_WITHHELD,
-    EVENT_JACKPOT_GRANTED,             // jackpot reward (extra reward for valid object)
-
+                                    // go to CPU if valid, check stage, check schedule, do reward roll.                             
     EVENT_DISPENSE_COMPLETE,           
     EVENT_GATE_OPEN_COMPLETE,
     EVENT_GATE_CLOSE_COMPLETE,
