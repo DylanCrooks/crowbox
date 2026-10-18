@@ -11,3 +11,7 @@ build/
 
 # Local backups
 *.bak
+
+# ESP-IDF vision project
+vision/sdkconfig.old
+vision/managed_components/

@@ -1,0 +1,8 @@
+# Settings applied when sdkconfig is (re)generated. Put project settings here
+# rather than relying only on menuconfig, so they survive a clean rebuild.
+
+# ESP32-P4 chip revision: check it when the board arrives (esptool prints
+# "Chip is ESP32-P4 (revision vX.Y)" on connect).
+#   v3.x (default): leave this commented out.
+#   v1.x: uncomment the next line, then delete sdkconfig and the build folder.
+# CONFIG_ESP32P4_SELECTS_REV_LESS_V3=y

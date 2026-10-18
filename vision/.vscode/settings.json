@@ -1,0 +1,13 @@
+{
+    // Use the standalone ESP-IDF v5.5.6 install (not PlatformIO's copy, not EIM).
+    "idf.currentSetup": "C:/esp/v5.5.6/esp-idf",
+    "idf.customExtraVars": {
+        "IDF_PATH": "C:/esp/v5.5.6/esp-idf",
+        "IDF_TOOLS_PATH": "C:/Users/dccro/.espressif",
+        "IDF_PYTHON_ENV_PATH": "C:/Users/dccro/.espressif/python_env/idf5.5_py3.14_env"
+    },
+    "idf.flashType": "UART",
+    // Keep CMake Tools from configuring this folder on its own; the ESP-IDF extension drives the build.
+    "cmake.configureOnOpen": false,
+    "cmake.autoConfigureOnEdit": false
+}

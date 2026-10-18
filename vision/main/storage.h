@@ -1,0 +1,1 @@
+// microSD storage: public interface.
