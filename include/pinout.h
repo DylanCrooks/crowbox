@@ -43,11 +43,13 @@
  * PWM signal is 3.3V logic from ESP32.
  * ============================================================================= */
 
-/** SG90 doser servos — hopper mechanisms */
+/** MG996R doser servos — hopper mechanisms */
 #define PIN_SERVO_HOPPER1       13      /* Hopper 1 — seed / LVT */
-#define PIN_SERVO_HOPPER2       14      /* Hopper 2 — high-value / HVT */
+#define PIN_SERVO_HOPPER2       19      /* Hopper 2 — high-value / HVT */
 #define PIN_SERVO_HOPPER3       18      /* Hopper 3 — drug / EHVT */
-#define PIN_SERVO_HOPPER4       19      /* Hopper 4 — shaping object */
+#define PIN_SERVO_HOPPER4       14      /* Hopper 4 — shaping object (not in current build).
+                                           GPIO14 outputs a signal at boot, so a servo
+                                           here may twitch at power-up. */
 
 /** MG996R trapdoor lifter servo */
 #define PIN_SERVO_TRAPDOOR      23
@@ -69,13 +71,13 @@
 #define PIN_I2C_SCL             22
 
 /* =============================================================================
- * UART — Pi Zero communication (Phase 6+, not yet implemented)
+ * UART — vision board (ESP32-P4-NANO) communication (Phase 6+, not yet implemented)
  * UART2 peripheral, remapped to these pins via ESP32 GPIO matrix.
  * TX/RX naming is from ESP32's perspective.
  * ============================================================================= */
 
-#define PIN_UART_TX             17      /* ESP32 TX → Pi Zero RX */
-#define PIN_UART_RX             16      /* ESP32 RX ← Pi Zero TX */
+#define PIN_UART_TX             17      /* ESP32 TX → vision board (ESP32-P4) RX */
+#define PIN_UART_RX             16      /* ESP32 RX ← vision board (ESP32-P4) TX */
 
 /* =============================================================================
  * SPARE / RESERVED
@@ -122,7 +124,7 @@
 #define MCP_BIT_LED_BLUE        6       /* GPA6 — Blue LED (jackpot) */
 
 
-/** COB LED strip (output) — via GODIY MOSFET module, 5V load */
+/** COB LED strip (output) — via D4184 logic-level MOSFET module, 5V load */
 #define MCP_BIT_COB_LED         7       /* GPA7 — White illumination strip */
 
 
@@ -140,7 +142,7 @@
 /** Gate linear actuator B — L298N IN3/IN4 (bits 2-3, same register for atomic write) */
 #define MCP_BIT_ACT_B_IN1       2       /* GPB2 — Actuator B IN1 */
 #define MCP_BIT_ACT_B_IN2       3       /* GPB3 — Actuator B IN2 */
-/** Solenoid (output) — via GODIY MOSFET module (IRF520-style), 12V load */
+/** Solenoid (output) — via D4184 logic-level MOSFET module, 12V load */
 #define MCP_BIT_SOLENOID        4       /* GPB4 — Solenoid logic line */
 
 /** GPB5-7 — spare */

@@ -1,0 +1,287 @@
+CROWBOX VISION BOX - ESP32-P4 BOARD + OV5647 CAMERA
+Mounting and assembly notes
+==========================================================
+
+Updated 2026-10-17: switched from a Raspberry Pi Zero 2 WH + Camera
+Module 3 + Coral to a Waveshare ESP32-P4-NANO + OV5647 camera, because
+the Zero 2 W was unobtainable. Wiring now matches the Excel parts list
+(Cat6 link; the PIR cable and the reward load cell's HX711 land in this
+box).
+
+
+OVERVIEW
+--------
+The camera, the ESP32-P4-NANO board, a mini buck converter and the
+reward load cell's HX711 live in one small clear-lid IP65 box. The box
+hangs under the reward chamber, directly above the object pit, with the
+clear lid facing DOWN. The camera sits inside the box and looks straight
+down through the lid at the pit floor, so the lid works as the camera
+window.
+
+The P4 board does the vision work and sends the main ESP32 a short
+result string over UART (the 2-wire serial link). There is no Coral:
+the classifier runs on the P4 itself.
+
+Three cables enter the box: the Cat6 link to the main junction box
+(PG9, back wall), the PIR cable (PG7, front wall) and the reward load
+cell's leads (PG7, front wall).
+
+
+PLACEMENT
+---------
+- Height: about 300 mm above the pit floor (pit is 160 x 160 mm, 135 mm
+  deep).
+- Point the camera straight down, no tilt.
+- Coverage with the recommended camera (OV5647, 3.6 mm lens, about
+  54 x 41 deg): at 300 mm it sees about 300 x 225 mm. The pit's 160 mm
+  fits the short side with about 30 mm to spare on each side, so keep
+  the camera within ~30 mm of the pit's center along that axis (up to
+  ~65 mm along the long axis). Turn the camera so its long axis runs
+  the way the box has to be offset.
+- Use the sensor's 1280 x 960 binning mode. It reads the whole sensor,
+  so it keeps the full view; the pit is then about 680 pixels across,
+  far more than the model needs (96-224 px). The 1920 x 1080 mode is a
+  center crop with a narrower view. Check the coverage on the bench with
+  a ruler at 300 mm before gluing anything.
+- Do NOT use Waveshare's RPi Camera (B) (the camera in the P4-NANO
+  KIT-A). Its 6 mm lens (43 deg diagonal) sees only about 190 x 140 mm
+  at 300 mm, less than the pit.
+
+Why overhead is better than mounting on a pit wall:
+- An object looks the same wherever it lands. From an angle, near
+  objects look big and far ones look small and squashed.
+- The whole floor is one distance away, so all of it is in focus.
+- No angle mount is needed.
+- It's out of reach of crows and dropped trash.
+
+
+BOX
+---
+- Clear-lid IP65 junction box, 115 x 90 x 55 mm (outer), with mounting
+  ears (flange) on the base. Example: Anbox model 115A. Generic versions
+  sell on Amazon.
+- Estimated interior: about 108 x 83 mm floor, 45-48 mm deep. Corner
+  screw posts take about 8 mm in each corner. Check the listing for
+  real interior dimensions.
+- Mounting: the model hangs the box from the two reward crossbars by its
+  ears (Excel, Fasteners tab).
+- Glands: 2 x PG7 on the front wall (PIR, reward load cell leads),
+  1 x PG9 on the back wall (Cat6). Drill the base walls only.
+- NEVER drill through the lid. It's the camera window, and any hole
+  inside the seal leaks.
+- To reach the board (flashing, microSD), unscrew the lid from below.
+
+
+INTERNAL LAYOUT
+---------------
+(Box base is up against the reward chamber; lid faces down.)
+
+  ESP32-P4-NANO  on nylon standoffs on the base. 50 x 50 mm. Check the
+                 hole size on your board (M2.5 or M3). Leave its USB-C
+                 port reachable once the lid is off, for flashing.
+  HX711          reward load cell amplifier, beside the P4 board on
+                 standoffs. About 34 x 21 mm.
+  Mini buck      MP1584EN, 12 V -> 5 V. About 22 x 17 mm.
+  OV5647 camera  mounted to the inside of the lid, lens down.
+                 25 x 24 mm.
+
+Space budget:
+- Floor (about 108 x 83 mm): the P4 board (50 x 50), the HX711 and the
+  buck fit side by side with room for cables.
+- Depth (about 45-48 mm): the board stack (standoffs + board + header
+  connectors) is roughly 20-25 mm from the base, and the camera stack
+  roughly 10-12 mm from the lid. That leaves clearance; the old Coral
+  depth squeeze is gone.
+
+Before buying, cut cardboard to 108 x 83 mm, lay the parts on it, and
+check the cable routing.
+
+
+CAMERA MOUNTING (inside the lid)
+--------------------------------
+- Glue four M2 nylon standoffs to the inside of the lid with 5-minute
+  epoxy, matching the camera's hole pattern (Pi v1.3-style boards use
+  21 x 12.5 mm hole spacing; check yours).
+- Standoff length = the lens's height above the board + about 1.5 mm,
+  so the lens sits just off the lid. Measure your camera first; the
+  standoff kit has several M2 lengths.
+- Screw the camera PCB to the standoffs with M2 x 4 mm screws.
+- DO NOT let the lens touch the lid; it scratches both surfaces.
+- Focus: Pi v1.3-style lenses are fixed-focus, set for about 1 m to
+  infinity, so the pit floor at 300 mm may be slightly soft. Test on the
+  bench at 300 mm before gluing anything. If it's soft, gently break the
+  glue dot on the lens and turn the lens a little counter-clockwise to
+  focus closer.
+- DO NOT use superglue (CA). Its fumes fog polycarbonate white, right
+  where the camera looks through.
+- Put a ring of black adhesive foam around the lens, touching the lid,
+  to block reflections.
+- The camera comes off with the lid. A 15 cm ribbon gives enough slack
+  to open it. Disconnect the ribbon if you need the lid fully off.
+- Keep the lid's window area clean and scratch-free; it's the lens
+  window now.
+
+
+WIRING
+------
+Camera to P4 board:
+- The camera's own 15-pin ribbon. The P4-NANO's camera connector is the
+  standard 15-pin Raspberry Pi type (schematic J3, "15PIN--PI4B"), so
+  the cable that comes with a Pi-style camera fits as-is, the same way
+  it would on a Pi 4. No Zero cable.
+
+Cat6 link to the main junction box (PG9, back wall; conductor map from
+the Excel's Wiring tab, W08; cut both RJ45 plugs off):
+  Orange        +12 V           -> mini buck IN+
+  White/orange  GND             -> mini buck IN-, P4 board GND
+  Green         ESP32 TX        -> P4 board UART RX
+                (main GPIO17)
+  White/green   P4 board UART TX -> ESP32 RX (main GPIO16)
+  Blue          PIR out          -> main ESP32 GPIO34 (passes through)
+  White/blue    GND
+  Brown         HX711 SCK        -> main ESP32 GPIO25
+  White/brown   HX711 DOUT       -> main ESP32 GPIO26
+
+Power inside the box:
+- The mini buck makes 5 V from the 12 V. Set it to 5.0-5.1 V with the
+  multimeter BEFORE connecting anything. It feeds the P4 board's 5V
+  header pin and the PIR (the AM312 runs fine on 5 V).
+- The HX711 runs off the P4 board's 3.3V header pin. The board's 3.3 V
+  regulator is rated 3 A (schematic), and the HX711 needs a few mA.
+- Both boards are 3.3 V logic, so the UART needs no level shifting.
+
+Choosing the P4 board's UART pins:
+- Use any two free header GPIOs (the P4 can route UART to any pin).
+- Avoid the pins the board already uses (Waveshare wiki examples and
+  schematic): GPIO7/8 (I2C), GPIO9-13 and GPIO53 (audio), GPIO28-31,
+  34, 35, 49-52 (Ethernet), GPIO39-44 (microSD) and GPIO45 (microSD
+  power switch), GPIO37/38 (USB-serial chip), GPIO54 (ESP32-C6 enable).
+- Record the two pins you pick in docs/pinout.md.
+
+Flashing:
+- The USB-C port does power, flashing and serial. Before plugging a
+  laptop in, unplug the buck's 5 V lead from the board's header. The
+  laptop then powers the board alone and nothing back-feeds into the
+  buck or the Cat6 line.
+- Put the glands on faces that point down or sideways, never up, so
+  water runs off them.
+
+
+POWER AND HEAT
+--------------
+- Waveshare publishes no current figures for the P4-NANO. Measure it on
+  arrival with the UM25C USB power meter, in three states: streaming
+  the camera, idle, and in deep sleep. Until then, budget about 0.5 A at
+  5 V (an estimate). The MP1584EN (3 A) has plenty of headroom.
+- Idle draw matters because the buck also powers the PIR, which is the
+  wake source, so this box is never fully off. If the board idles high
+  (for example, 0.5 W is about 12 Wh a day, ~12% of the battery):
+  * Firmware fixes first: hold the onboard ESP32-C6 (Wi-Fi) in reset
+    (GPIO54 drives its enable), leave the Ethernet unused, and
+    deep-sleep the P4 between visits.
+  * Hardware fix if that's not enough: switch the board's 5 V from the
+    main ESP32. That needs a control wire; the Cat6's second GND
+    (white/blue) is the candidate to repurpose.
+- Heat: far less than the Pi + Coral. The shade under the reward
+  chamber and hood is enough.
+
+
+LIGHTING AND CAPTURE
+--------------------
+- Mount the LED strip around the camera, also pointing down, so light
+  is even across the pit floor.
+- Diffuse it: a frosted cover, or aim it at a white surface. Bare LEDs
+  make glare spots on coins, which confuse the classifier.
+- Use a matte, light-colored pit floor (light gray or white), so dark
+  objects like beetles stand out.
+- Use a camera WITH an IR filter. Without one, daylight coming through
+  the deposit window tints the image and shifts with the time of day.
+- Take the picture only after the load cell reads steady (the object
+  has landed and stopped moving) AND the motion sensor is quiet (the
+  crow has stepped back from the pit).
+- Combine the result with weight: camera says "coin" + scale says
+  5.67 g = quarter. (Quarter 5.67 g, nickel 5.00 g, dime 2.27 g,
+  penny 2.5 g, pre-1982 penny 3.11 g, cigarette butt well under 1 g.)
+- Training data: save JPEGs to the board's microSD (the P4 has a
+  hardware JPEG encoder). Collect 100-300 photos per class (coin, butt,
+  beetle, junk) inside the real box under the real lighting.
+
+
+VISION FIRMWARE NOTES (Phase 6)
+-------------------------------
+- A separate ESP-IDF project (vision/ in the repo, not yet created).
+  Official PlatformIO doesn't support the ESP32-P4; the community
+  pioarduino fork does, but native ESP-IDF (idf.py / the VS Code ESP-IDF
+  extension) is the safer route. The main firmware stays on PlatformIO.
+- ESP-IDF v5.5.3 or later (Waveshare recommends v5.5.4).
+- Chip revision: v1.x and v3.x ESP32-P4 chips need different builds.
+  esptool prints the revision when it connects ("Chip is ESP32-P4
+  (revision vX.Y)"). For v3.x keep the default; for v1.x set
+  CONFIG_ESP32P4_SELECTS_REV_LESS_V3=y. Never reuse an sdkconfig or a
+  build folder between the two.
+- Camera: Espressif's esp-video + esp_cam_sensor components support the
+  OV5647 over MIPI-CSI. Its modes: 800x1280, 800x640, 800x800 (RAW8,
+  50 fps), 1920x1080 (RAW10, 30 fps), 1280x960 binning (RAW10, 45 fps).
+  Use 1280x960. The P4's image processor handles RAW-to-RGB/YUV.
+- Model: ESP-DL, int8. Espressif's MobileNetV2 example runs in about
+  177 ms on one P4 core.
+- Placeholder until a model exists: threshold against the light pit
+  floor, find blobs, score roundness, combine with weight. There's no
+  OpenCV on the P4; src/cv.py (OpenCV Hough circles) was the Pi-side
+  version and won't run here.
+
+
+MAINTENANCE
+-----------
+- No Wi-Fi in normal operation (onboard ESP32-C6 held in reset).
+- Firmware updates: open the lid, unplug the buck's 5 V lead from the
+  board, connect a laptop over USB-C, flash.
+- Training photos: pull the microSD.
+
+
+PARTS LIST
+----------
+[ ] Clear-lid IP65 junction box, 115 x 90 x 55 mm, with mounting ears
+[ ] Waveshare ESP32-P4-NANO, basic kit (~$19). Not KIT-A: its camera's
+    lens is too narrow.
+[ ] OV5647 camera, Raspberry Pi v1.3-style, 25 x 24 mm, 3.6 mm lens,
+    WITH IR filter (not NoIR / night vision). Includes a 15-pin cable.
+[ ] microSD, 32 GB high-endurance (training photos)
+[ ] Mini buck 12 -> 5 V (MP1584EN)
+[ ] Nylon standoff kit M2 / M2.5 / M3 (camera + P4 board)
+[ ] 5-minute epoxy (NOT superglue)
+[ ] Black adhesive foam strip (lens ring)
+[ ] 2 x PG7 + 1 x PG9 cable glands
+[ ] Cat6 stranded patch cable, plugs cut off (length: Excel Wiring tab)
+[ ] Female Dupont housings / jumper ends for the P4 board's header
+[ ] Mounting hardware per the Excel's Fasteners tab
+
+Already on the main parts list:
+    COB LED strip, AM312 PIR, load cell + HX711 kit, USB-C cable
+    (check it carries data), UM25C USB power meter, microSD reader.
+
+No longer needed (switched to ESP32-P4, 2026-10-17):
+    Raspberry Pi Zero 2 WH, Camera Module 3, Pi Zero 22->15 pin camera
+    cable, Coral USB Accelerator, right-angle USB-C to micro-USB OTG
+    cable, P-channel MOSFET for Coral power switching, VHB tape for the
+    Coral.
+
+
+SOURCES
+-------
+- ESP32-P4-NANO product page and kits:
+  https://www.waveshare.com/esp32-p4-nano.htm
+- ESP32-P4-NANO schematic (camera connector J3, power path, C6 enable):
+  https://files.waveshare.com/wiki/ESP32-P4-NANO/ESP32-P4-NANO-schematic.pdf
+- ESP32-P4-NANO wiki (pins used by onboard peripherals):
+  https://www.waveshare.com/wiki/ESP32-P4-Nano-StartPage
+- Waveshare OV5647 camera selection guide (RPi Camera B = 6 mm, 43 deg):
+  https://www.waveshare.com/RPi-Camera-B.htm
+- esp_cam_sensor supported sensors:
+  https://components.espressif.com/components/espressif/esp_cam_sensor
+- OV5647 modes (Kconfig):
+  https://github.com/espressif/esp-video-components/blob/master/esp_cam_sensor/sensors/ov5647/Kconfig.ov5647
+- Chip revision profiles:
+  https://github.com/waveshareteam/ESP32-P4-Platform/blob/main/docs/ESP32P4_REVISION_CONFIG.md
+- ESP-DL MobileNetV2 example on ESP32-P4:
+  https://components.espressif.com/components/espressif/esp-dl/versions/3.3.5/examples/mobilenetv2_cls

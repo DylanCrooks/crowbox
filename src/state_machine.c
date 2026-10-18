@@ -17,6 +17,9 @@
 #include "logging.h"
 #include "ir_beam.h"
 #include "cv.h"
+#include "sleep.h"
+#include "esp_system.h"
+#include <stdlib.h>
 
 
 #define TAG "state_machine"
@@ -63,7 +66,7 @@ static void run_trapdoor_sequence(void) {
     if (s_object_in_trapdoor) {
             solenoid_unlock();
             int64_t time_trapdoor_unlock = (esp_timer_get_time()/1000);
-            ESP_LOGI(TAG,"time at trapdoor unlock: %d", time_trapdoor_unlock);
+            ESP_LOGI(TAG,"time at trapdoor unlock: %lld", time_trapdoor_unlock);
             vTaskDelay(pdMS_TO_TICKS(150));
             servo_trapdoor_set_angle(90);
             vTaskDelay(pdMS_TO_TICKS(2000));
@@ -125,6 +128,7 @@ static void handle_pir_tripped(crowbox_event_msg_t *msg) {
             vTaskDelay(pdMS_TO_TICKS(5000));
             esp_restart();
             break;
+        default: break;
     }
     
 
@@ -153,9 +157,7 @@ static void handle_pir_cleared(crowbox_event_msg_t *msg) {
         case STATE_COOLDOWN:
         run_cooldown_sequence();
         break;
-        
-
-
+        default: break;
     }
 }
 
@@ -170,8 +172,8 @@ static void handle_deposit_weight_detected(crowbox_event_msg_t *msg) {
             break;
         case STATE_COOLDOWN:
             ESP_LOGW(TAG, "deposit weight detected during cooldown state");
-            //transition_to(STATE_TRAPDOOR_UNLOCKING) ??
             break;
+        default: break;
     }
 }
 
@@ -205,7 +207,7 @@ static void handle_deposit_weight_settled(crowbox_event_msg_t *msg) {
         }
         transition_to(STATE_DISPENSING);
         break;
-    
+        default: break;
     }
 }
 

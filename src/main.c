@@ -5,6 +5,7 @@
 #include "logging.h"
 #include "i2c_bus.h"
 #include "mcp23017.h"
+#include "gate.h"
 #include "weight.h"
 #include "pir.h"
 #include "servo.h"
@@ -14,6 +15,8 @@
 #include "state_machine.h"
 #include "tests.h"
 #include "esp_sleep.h"
+#include "esp_random.h"
+#include "nvs_flash.h"
 #include "config.h"
 
 
@@ -25,6 +28,7 @@ void app_main(void) {
     config_init();
     i2c_bus_init();
     mcp23017_init();
+    gate_home();
     weight_init(WEIGHT_SENSOR_DEPOSIT);
     weight_init(WEIGHT_SENSOR_REWARD);
     pir_init();
@@ -33,7 +37,7 @@ void app_main(void) {
     event_bus_init();
     state_machine_start();
     srand(esp_random());
-
+    
 
     log_boot(g_config.stage, g_config.successful_deposit_count);
     

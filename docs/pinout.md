@@ -2,7 +2,7 @@
 
 Canonical reference for all pin assignments. Update this immediately whenever wiring changes — this file is the source of truth, not memory.
 
-Board: DOIT ESP32 DEVKIT V1 (esp32doit-devkit-v1)
+Board: 38-pin ESP32 dev board (HiLetgo clone, CP2102N, ESP-WROOM-32 module). PlatformIO builds it with the `esp32doit-devkit-v1` board ID, which works because the chip is the same.
 
 ## Native ESP32 Pins
 
@@ -13,16 +13,16 @@ Board: DOIT ESP32 DEVKIT V1 (esp32doit-devkit-v1)
 | 33 | HX711 #1 (deposit chamber) — DOUT | Bit-bang timing, must be native. Configure internal pull-up in firmware |
 | 25 | HX711 #2 (reward chamber) — SCK | Bit-bang timing, must be native output-capable GPIO |
 | 26 | HX711 #2 (reward chamber) — DOUT | Bit-bang timing, must be native. Configure internal pull-up in firmware |
-| 13 | Servo — Hopper 1 (seed/LVT) doser | LEDC PWM |
-| 14 | Servo — Hopper 2 (high-value/HVT) doser | LEDC PWM |
-| 18 | Servo — Hopper 3 (drug) doser | LEDC PWM |
-| 19 | Servo — Hopper 4 (object) doser | LEDC PWM |
+| 13 | MG996R servo — Hopper 1 (seed/LVT) doser | LEDC PWM |
+| 19 | MG996R servo — Hopper 2 (high-value/HVT) doser | LEDC PWM. Moved from GPIO14, which outputs a signal at boot and would twitch the servo |
+| 18 | MG996R servo — Hopper 3 (drug) doser | LEDC PWM |
+| 14 | MG996R servo — Hopper 4 (object) doser | LEDC PWM. Hopper 4 is not part of the current build — pin reserved for later. GPIO14 outputs a signal at boot, acceptable here since nothing is attached |
 | 23 | MG996R trapdoor lifter servo | LEDC PWM |
 | 4 | Buzzer | LEDC PWM |
 | 21 | I2C SDA | Shared bus: Notecard + MCP23017 |
 | 22 | I2C SCL | Shared bus: Notecard + MCP23017 |
-| 16 | UART RX ← Pi Zero | Phase 6+. UART2 default RX pin |
-| 17 | UART TX → Pi Zero | Phase 6+. UART2 default TX pin |
+| 16 | UART RX ← vision board (ESP32-P4-NANO) TX | Phase 6+. UART2 default RX pin. Both boards are 3.3V logic, no level shifting. Runs over the Cat6 link (white/green) |
+| 17 | UART TX → vision board (ESP32-P4-NANO) RX | Phase 6+. UART2 default TX pin. Runs over the Cat6 link (green) |
 | 27 | Spare | Free output-capable GPIO, reserved for future expansion |
 
 **15 of ~25 usable native GPIO in use. No free output-capable GPIO remaining except GPIO27 (spare). GPIO34/35/36/39 are input-only and cannot drive outputs.**
@@ -59,7 +59,7 @@ Expander pin assignments:
 | GPB1 | Gate actuator A — IN2 |
 | GPB2 | Gate actuator B — IN1 |
 | GPB3 | Gate actuator B — IN2 | 
-| GPB4 | Solenoid logic line, via MOSFET (blue/green thing) | 
+| GPB4 | Solenoid logic line, via D4184 MOSFET module | 
 | GPB5 | SPARE
 | GPB6 | SPARE
 | GPB7 | SPARE
@@ -70,9 +70,9 @@ Expander pin assignments:
 | Rail | Source | Voltage | Powers |
 |---|---|---|---|
 | Main battery | LiFePO4 pack | 12V | Source for all downstream rails |
-| Logic rail | Buck converter #1 (12V→5V) | 5V | ESP32 VIN (onboard AMS1117 then regulates to 3.3V internally), all 5 servos (SG90 ×4, MG996R ×1), buzzer, COB LED strip (via GODIY MOSFET), signal LEDs red/green/blue |
+| Logic rail | Buck converter #1 (12V→5V) | 5V | ESP32 VIN (onboard AMS1117 then regulates to 3.3V internally), all 5 servos (MG996R ×5 — 4 hopper dosers + trapdoor lifter; ~2.5A stall each, so only one may move at a time — jackpot doses are staggered, never simultaneous), buzzer, COB LED strip (via D4184 MOSFET module), signal LEDs red/green/blue |
 | Microcontroller rail | ESP32 onboard AMS1117 (from 5V VIN) | 3.3V | ESP32 core, MCP23017 (VDD), HX711 boards ×2, IR beam sensors ×4, PIR AM312 |
-| Actuator rail | 12V direct from battery (post-fuse) | 12V | Linear actuators ×2 (via L298N), solenoid (via IRF520 MOSFET) |
+| Actuator rail | 12V direct from battery (post-fuse) | 12V | Linear actuators ×2 (via L298N), solenoid (via D4184 MOSFET module) |
 | Buck converter #2 | TBD | TBD | Role not yet defined — clarify before build |
 
 Common ground: all rails share a single GND reference tied at the battery negative terminal.

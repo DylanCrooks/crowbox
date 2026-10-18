@@ -48,7 +48,7 @@ This block takes the safe 5V coming out of your buck converter and distributes i
 
 * Slot 3: Out to the heavy-duty MG996R trapdoor servo
 
-* Slot 4: Out to the breadboard power rail (for your 4 smaller SG90 hopper servos)
+* Slot 4: Out to a second 5V WAGO feeding the 4 MG996R hopper servos (not the breadboard power rail — breadboard contacts aren't rated for MG996R stall current)
 
 * Slot 5: Out to the 5V COB LED strip lighting array
 

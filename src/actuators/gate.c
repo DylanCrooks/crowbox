@@ -4,11 +4,24 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
-// CLAUDE TODO: tune this on hardware — time for actuator to fully extend/retract
-#define GATE_TRAVEL_TICKS pdMS_TO_TICKS(2000)
+#define GATE_TRAVEL_TICKS pdMS_TO_TICKS(10000)
+// Longer than actual travel — guarantees full retract regardless of starting position.
+#define GATE_HOME_TICKS pdMS_TO_TICKS(12000)
 
 static bool s_gate_open = false;
 bool gate_is_open(void) { return s_gate_open; }
+
+// Drive both actuators in the retract direction long enough to guarantee full retract
+// from any starting position. Call once on startup before entering the main loop.
+void gate_home(void) {
+    mcp23017_set_pin(1, MCP_BIT_ACT_A_IN1, false);
+    mcp23017_set_pin(1, MCP_BIT_ACT_A_IN2, true);
+    mcp23017_set_pin(1, MCP_BIT_ACT_B_IN1, false);
+    mcp23017_set_pin(1, MCP_BIT_ACT_B_IN2, true);
+    vTaskDelay(GATE_HOME_TICKS);
+    gate_stop();
+    s_gate_open = false;
+}
 
 // gate_open
 // mcp23017_set_pin calls for actuator A: IN1 high, IN2 low (port B, bits 0 and 1)

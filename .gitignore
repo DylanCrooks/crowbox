@@ -5,3 +5,9 @@
 .vscode/ipch
 CLAUDE.local.md
 .history/
+
+# Build output (stray CMake/MSVC configure; PlatformIO builds into .pio)
+build/
+
+# Local backups
+*.bak

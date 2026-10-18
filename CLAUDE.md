@@ -12,7 +12,7 @@ Phase 1-3: building and testing individual sensor/actuator drivers on a breadboa
 
 ## Hardware architecture
 
-**Brain:** ESP32 DevKitC (DOIT ESP32 DEVKIT V1), running ESP-IDF — not Arduino framework. See "Framework choice" below.
+**Brain:** 38-pin ESP32 dev board (HiLetgo clone, ESP-WROOM-32 module; PlatformIO board ID `esp32doit-devkit-v1`), running ESP-IDF — not Arduino framework. See "Framework choice" below.
 
 **Sensors:**
 - 2x load cell + HX711 — one under the deposit chamber (object weight on drop), one under the reward chamber (detects when tray returns to empty, used to safely time gate closing without risk of closing on a beak, and to trigger re-staging the next treat)
@@ -20,16 +20,16 @@ Phase 1-3: building and testing individual sensor/actuator drivers on a breadboa
 - 4x IR beam-break sensors — one per hopper, detect whether that hopper is empty. Not used for primary deposit detection (that's weight-only).
 
 **Actuators:**
-- 4x SG90 servos — one per hopper (seed/LVT, high-value/HVT, drug, training object), each doses one portion into the shared central reward chamber. Doser mechanism (rotating disk vs trapdoor) is mechanical, not yet decided, doesn't affect firmware.
+- 4x MG996R servos — one per hopper (seed/LVT, high-value/HVT, drug, training object), each doses one portion into the shared central reward chamber. Doser mechanism is a notched rotor under an inverted Gatorade-bottle hopper. MG996R stall current (~2.5A each) means only one doser may move at a time on the shared 5V rail — jackpot doses are staggered, never simultaneous.
 - 2x mini 12V linear actuators — raise/lower a sliding sleeve gate over the reward chamber. Lowered = inaccessible but visible (clear walls). Raised = accessible. Driven via L298N H-bridge. The 12V actuator rail is a fully separate power domain from 3.3V/5V logic — common ground only, never shared power rail (load cells are noise-sensitive to motor switching).
 
 **I/O expansion:** MCP23017 I2C GPIO expander (address 0x20) carries all slow/non-timing-critical signals — hopper IR beams, signal lights, illumination, gate actuator direction. Native ESP32 GPIO is reserved for anything needing real PWM (servos, buzzer), precise bit-bang timing (HX711 clock/data), or RTC deep-sleep wake capability (PIR).
 
-**Connectivity (Phase 5, not yet implemented):** Blues Wireless Notecard (LTE-M cellular), chosen specifically over raw AT-command modem programming to keep focus on firmware skills rather than modem vendor quirks. No WiFi anywhere — cellular/radio-first by design, since deployment should work without WiFi infrastructure.
+**Connectivity (Phase 5, not yet implemented):** Blues Notecard Cellular, MBNAN variant (LTE Cat-1 bis, North America), on a Notecarrier A in the main junction box, talking to the main ESP32 over the shared I2C bus (GPIO21/22, Notecard at 0x17). Chosen specifically over raw AT-command modem programming to keep focus on firmware skills rather than modem vendor quirks. The originally planned LTE-M (narrowband) Notecard became quote-only (250-unit minimum) by Oct 2026. No WiFi anywhere — cellular/radio-first by design, since deployment should work without WiFi infrastructure. (The vision board's onboard ESP32-C6 Wi-Fi stays off in deployment; at most it's a development convenience.)
 
-**Computer vision (Phase 6+, not yet implemented):** Raspberry Pi Zero 2W acts as a vision coprocessor over UART (2 wires) to the ESP32. It owns the camera (Pi Camera v3) and runs classification entirely independently — the ESP32 only ever receives a short result string back, never touches image data. This split exists specifically so remote/LoRa deployment (no usable bandwidth for images) only needs to transmit a few bytes, not a photo.
+**Computer vision (Phase 6+, not yet implemented):** a Waveshare ESP32-P4-NANO board with an OV5647 camera acts as a vision coprocessor over UART (2 wires) to the main ESP32. It owns the camera and runs classification entirely independently — the main ESP32 only ever receives a short result string back, never touches image data. This split exists specifically so remote/LoRa deployment (no usable bandwidth for images) only needs to transmit a few bytes, not a photo. Switched from a Raspberry Pi Zero 2 W + Camera Module 3 + Coral on 2026-10-17, because the Zero 2 W was unobtainable. There's no Coral: the model runs on the P4 itself as an int8 network through ESP-DL. The P4 firmware is a separate ESP-IDF project (official PlatformIO doesn't support the ESP32-P4), needs ESP-IDF v5.5.3+, and its build must match the board's chip revision (v1.x and v3.x need different builds). Hardware, wiring and firmware notes: `docs/crowbox_vision_box.txt`.
 
-**Power architecture:** single 12V LiFePO4 battery (standard 12V solar ecosystem compatible for Phase 9). 12V devices (2x linear actuators via L298N, solenoid via IRF520) wired directly to the battery — L298N's onboard logic-power jumper stays installed so it self-generates internal 5V, not tapped externally. One buck converter (12V→5V, 3A+) produces a single 5V rail feeding the ESP32 (VIN pin — its onboard regulator makes 3.3V internally, no separate 3.3V supply needed), PIR, all 5 servos, LED strip, buzzer, signal LEDs, and MCP23017 (tolerates 5V per datasheet). HX711 boards and IR beam sensors tap the ESP32's own 3.3V output pin. Total new conversion component for the whole system: one buck converter module. Verify actual solenoid/actuator max voltage tolerance against 4S LiFePO4's full-charge ceiling (~14.6V) once parts arrive — don't assume the "12V" label covers it.
+**Power architecture:** single 12V LiFePO4 battery (standard 12V solar ecosystem compatible for Phase 9). 12V devices (2x linear actuators via L298N, solenoid via D4184 MOSFET module) wired directly to the battery — L298N's onboard logic-power jumper stays installed so it self-generates internal 5V, not tapped externally. One buck converter (12V→5V, 3A+) produces a single 5V rail feeding the ESP32 (VIN pin — its onboard regulator makes 3.3V internally, no separate 3.3V supply needed), PIR, all 5 servos, LED strip, buzzer, signal LEDs, and MCP23017 (tolerates 5V per datasheet). HX711 boards and IR beam sensors tap the ESP32's own 3.3V output pin. Total new conversion component for the whole system: one buck converter module. Verify actual solenoid/actuator max voltage tolerance against 4S LiFePO4's full-charge ceiling (~14.6V) once parts arrive — don't assume the "12V" label covers it.
 
 ## Framework choice: ESP-IDF, not Arduino
 
@@ -65,6 +65,8 @@ src/
                                jackpot_chance_pct), NVS-backed
 include/
   crowbox.h                   all shared enums/structs — see "Core types" below
+vision/                       Phase 6, not yet created: separate ESP-IDF project for the
+                               ESP32-P4 vision board (built with idf.py, not PlatformIO)
 ```
 
 **Development workflow — preserve this pattern.** Never write a new hardware driver directly inside the integrated state machine. Always build and prove it first as a standalone throwaway test program (a temporary `app_main()` that exercises just the one driver and prints results to serial). Only wire it into the real event bus once it works in isolation. This is the established working pattern for this project specifically so a single person can develop one component at a time without holding the entire system in their head.
@@ -125,7 +127,7 @@ No `TONE_PRESET` — restocking happens while the box is unoccupied, nothing to 
 
 **Gate-for-presence (corrected, now configurable):** PIR trip opens the gate to expose whatever is currently staged via a `config.presence_opens_gate` bool — does NOT trigger a new dispense either way. Default true for stage 1; stage 2 can be configured either way depending on what's being tested. Cheap to support both, so no hardcoded behavior per stage.
 
-**Trapdoor clearing (deposit chamber):** the deposit chamber floor is a trapdoor that opens into a trash can below, using the existing deposit-chamber load cell (no new sensor) plus a 12V solenoid deadbolt (IRF520 MOSFET driver, switched from a spare MCP23017 pin) and an MG996R lifter servo (native GPIO23, needs its own PWM-capable pin like the other servos). Sequence: `STATE_TRAPDOOR_UNLOCKING → STATE_TRAPDOOR_OPENING → STATE_TRAPDOOR_CLOSING → STATE_TRAPDOOR_LOCKING`. Triggered at departure (`handle_pir_cleared`), gated on a `deposit_pending_clear` flag set whenever a deposit was logged during the visit (valid or rejected — either way the chamber needs clearing), not triggered immediately after logging so the mechanism doesn't operate while the crow might still be present.
+**Trapdoor clearing (deposit chamber):** the deposit chamber floor is a trapdoor that opens into a trash can below, using the existing deposit-chamber load cell (no new sensor) plus a 12V solenoid deadbolt (D4184 logic-level MOSFET module, switched from a spare MCP23017 pin) and an MG996R lifter servo (native GPIO23, needs its own PWM-capable pin like the other servos). Sequence: `STATE_TRAPDOOR_UNLOCKING → STATE_TRAPDOOR_OPENING → STATE_TRAPDOOR_CLOSING → STATE_TRAPDOOR_LOCKING`. Triggered at departure (`handle_pir_cleared`), gated on a `deposit_pending_clear` flag set whenever a deposit was logged during the visit (valid or rejected — either way the chamber needs clearing), not triggered immediately after logging so the mechanism doesn't operate while the crow might still be present.
 
 Chamber lighting upgraded to a 5V COB LED strip (continuous, diffusion-free — aids future CV edge detection) — this is the realization of the previously-planned "white illumination" pin (GPA6 on the expander), not a new pin.
 
@@ -182,11 +184,11 @@ No new state types needed for any of the above — existing states and events al
 
 ## Computer vision placeholder
 
-`classify_object()` is the deliberate swap point for CV — currently stubbed. Two valid placeholder approaches discussed: return `true` unconditionally (simplest), or OpenCV's Hough Circle Transform on the Pi Zero side, which detects circular shapes with zero training data and works for "is there a coin here" without needing real chamber photos yet. The real trained classifier comes once Phase 9's physical chamber exists and real photos can be collected — the function signature shouldn't need to change when that swap happens.
+`classify_object()` is the deliberate swap point for CV — currently stubbed. Two valid placeholder approaches discussed: return `true` unconditionally (simplest), or a classic-CV detector hand-written in C on the ESP32-P4 (threshold against the light pit floor, find blobs, score roundness; there's no OpenCV on the P4 — `src/cv.py` is the old Pi-side OpenCV Hough version and won't run there), which detects circular shapes with zero training data and works for "is there a coin here" without needing real chamber photos yet. The real trained classifier comes once Phase 9's physical chamber exists and real photos can be collected — the function signature shouldn't need to change when that swap happens.
 
 ## Open questions — confirm with Dylan, don't assume
 
-- **IRF520 gate voltage:** breakout module is generally usable from 3.3V logic, but verify it reliably switches with the ESP32's 3.3V signal once wired — if not, a logic-level-specific MOSFET or a small buffer stage may be needed.
+- **MOSFET modules — resolved 2026-10-15:** the IRF520 modules are being replaced with D4184 (AOD4184A) logic-level modules, for both the solenoid and the LED strip. The IRF520's threshold can reach 4V, so 3.3V logic can't guarantee it turns fully on. Once the D4184s arrive, confirm each has a gate pull-down: the MCP23017 pins are high-impedance from power-up until firmware configures them.
 - **Solenoid/actuator voltage tolerance:** confirm against actual datasheets that they handle up to ~14.6V (4S LiFePO4 full charge), not just the nominal "12V" label.
 
 @docs/pinout.md

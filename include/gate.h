@@ -1,5 +1,10 @@
 #pragma once
 
+// gate_home
+// Drive both actuators in the retract direction for longer than max travel time.
+// Guarantees fully retracted position on startup regardless of where they stopped.
+void gate_home(void);
+
 // gate_open
 // Extend both linear actuators to raise the gate sleeve.
 // Set MCP_BIT_ACT_A_IN1=1, MCP_BIT_ACT_A_IN2=0 (actuator A forward)
