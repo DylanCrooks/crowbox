@@ -1,0 +1,8 @@
+# ESP32-P4-NANO, 16MB flash. Blank offsets are filled in automatically
+# (the partition table itself sits at 0x8000; app partitions get 64K-aligned).
+# Name,   Type, SubType, Offset, Size,  Flags
+nvs,      data, nvs,     ,       24K,
+factory,  app,  factory, ,       4M,
+# Int8 classifier weights, loaded by ESP-DL straight from flash.
+model,    data, spiffs,  ,       4M,
+# ~8MB left unallocated after this.

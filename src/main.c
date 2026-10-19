@@ -18,6 +18,7 @@
 #include "esp_random.h"
 #include "nvs_flash.h"
 #include "config.h"
+#include "vision_link.h"
 
 
 static const char *TAG = "crowbox";
@@ -34,6 +35,7 @@ void app_main(void) {
     pir_init();
     servo_init();
     buzzer_init();
+    vision_link_init();
     event_bus_init();
     state_machine_start();
     srand(esp_random());

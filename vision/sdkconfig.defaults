@@ -1,8 +1,36 @@
 # Settings applied when sdkconfig is (re)generated. Put project settings here
 # rather than relying only on menuconfig, so they survive a clean rebuild.
 
+# Target chip. Without this, a missing sdkconfig falls back to plain esp32
+# (Xtensa), whose toolchain isn't installed.
+CONFIG_IDF_TARGET="esp32p4"
+
 # ESP32-P4 chip revision: check it when the board arrives (esptool prints
 # "Chip is ESP32-P4 (revision vX.Y)" on connect).
 #   v3.x (default): leave this commented out.
 #   v1.x: uncomment the next line, then delete sdkconfig and the build folder.
 # CONFIG_ESP32P4_SELECTS_REV_LESS_V3=y
+
+# Flash: the P4-NANO has 16MB.
+CONFIG_ESPTOOLPY_FLASHSIZE_16MB=y
+
+# Partition table: app + model layout, see partitions.csv.
+CONFIG_PARTITION_TABLE_CUSTOM=y
+CONFIG_PARTITION_TABLE_CUSTOM_FILENAME="partitions.csv"
+
+# PSRAM: on by default for the P4, pinned here so it can't silently drop out.
+CONFIG_SPIRAM=y
+
+# FAT long filenames, buffer on the heap (an alloc failure is a returned
+# error; a stack overflow is a crash).
+CONFIG_FATFS_LFN_HEAP=y
+
+# Camera: OV5647 over 2-lane MIPI-CSI, through the P4's ISP (esp_video).
+# 1280x960 binning is RAW10 off the sensor; the ISP converts it to the
+# pixel format camera.c asks for.
+CONFIG_CAMERA_OV5647=y
+CONFIG_CAMERA_OV5647_MIPI_RAW10_1280X960_BINNING_45FPS=y
+CONFIG_CAMERA_OV5647_MIPI_DEFAULT_FMT_RAW10_1280X960_BINNING_45FPS=y
+CONFIG_ESP_VIDEO_ENABLE_MIPI_CSI_VIDEO_DEVICE=y
+CONFIG_ESP_VIDEO_ENABLE_ISP=y
+CONFIG_ESP_VIDEO_ENABLE_ISP_VIDEO_DEVICE=y

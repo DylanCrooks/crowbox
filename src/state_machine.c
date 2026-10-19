@@ -73,6 +73,7 @@ static void run_trapdoor_sequence(void) {
             servo_trapdoor_set_angle(0);
             vTaskDelay(pdMS_TO_TICKS(2000));
             solenoid_lock();
+            cv_capture_reference();
         }
 }
 
@@ -95,6 +96,7 @@ static void run_logging_sequence(void) {
 static void run_cooldown_sequence(void) {
     if (gate_is_open()) { gate_close(); }
     run_trapdoor_sequence();
+    cv_light(false);
     run_preset_sequence();
     for (int i = 0; i < 4; i++) {
         if (ir_beam_hopper_is_empty(i)) {
@@ -119,6 +121,7 @@ static void handle_pir_tripped(crowbox_event_msg_t *msg) {
         case STATE_IDLE:
             s_visit_start_ms = msg->timestamp_ms;
             log_visit_start(g_config.stage);
+            cv_light(true);
             if (STAGE_CONFIGS[g_config.stage].gate_opens_on_pir) {
             gate_open();
             }

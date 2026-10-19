@@ -1,0 +1,11 @@
+{
+    // IntelliSense reads include paths from the last build, so headers like
+    // "freertos/FreeRTOS.h" resolve the same way the real compiler sees them.
+    "configurations": [
+        {
+            "name": "ESP-IDF",
+            "compileCommands": "${workspaceFolder}/build/compile_commands.json"
+        }
+    ],
+    "version": 4
+}

@@ -1,0 +1,4 @@
+dependencies:
+  idf: '>=5.5'
+  # Camera stack: V4L2-style video devices, MIPI-CSI + ISP, and the OV5647 driver (via esp_cam_sensor).
+  espressif/esp_video: '^2.5.0'

@@ -52,11 +52,11 @@ Last big order: 2026-10-17 (frame, fasteners, enclosures, electronics, Blues, to
 ### 2028 corner bracket kits (BLCCLOY 20-set) ×4 — 80 brackets
 Each bracket comes with 2 T-nuts, 2 M5×10 screws and 2 washers.
 - [x] Ordered
-- [ ] Received
+- [x] Received
 
 ### M5 drop-in T-nuts for 6mm-slot 2020 — 3 packs, 180 pcs
 - [x] Ordered
-- [ ] Received
+- [x] Received
 
 ---
 
@@ -144,7 +144,7 @@ Replaced by MG996R — SG90s are too weak to turn the doser rotor. Already bough
 ### MG996R servos, 4-pack (hopper dosers, replacing the SG90s)
 Each drives a notched rotor under an inverted Gatorade-bottle hopper. Comes with its own 25T horns — SG90 horns don't fit. With the 2-pack that makes 6 total: 3 dosers + 1 trapdoor + 2 spares (one for hopper 4 later).
 - [x] Ordered
-- [ ] Received
+- [x] Received
 
 ### Mini 12V linear actuator, 50mm stroke (x2 — gate lift) 
 - [x] Ordered
@@ -157,7 +157,7 @@ Each drives a notched rotor under an inverted Gatorade-bottle hopper. Comes with
 ### AOD4184 MOSFET modules, optocoupler-isolated, 5-pack (replaces the IRF520 modules)
 For the solenoid and the LED strip. Opto-isolated version: wire the module's input GND to the MCP23017's GND, and confirm on the bench that a 3.3V signal switches it reliably.
 - [x] Ordered
-- [ ] Received
+- [x] Received
 
 ---
 
@@ -203,7 +203,7 @@ IRF520 modules — being replaced by the AOD4184 modules (Actuators / drivers). 
 ### ESP32 38-pin screw-terminal breakout board
 Fits both 0.9" and 1.0" pin-row spacing (DevKitC-style). Gets the ESP32 off the breadboard.
 - [x] Ordered
-- [ ] Received
+- [x] Received
 
 ---
 
@@ -224,12 +224,12 @@ Fits both 0.9" and 1.0" pin-row spacing (DevKitC-style). Gets the ESP32 off the 
 ### XL4015 5A buck converter with voltmeter (HiLetgo)
 For the servo rail, if an LM2596 isn't enough.
 - [x] Ordered
-- [ ] Received
+- [x] Received
 
 ### MP1584EN mini buck converters (HiLetgo pack)
 One goes in the vision box (12V → 5V for the P4 board and the PIR).
 - [x] Ordered
-- [ ] Received
+- [x] Received
 
 ### Electrolytic capacitor assortment kit (ALLECIN)
 Includes the bulk capacitors for the servo rail and the Notecarrier.
@@ -250,7 +250,7 @@ Includes the bulk capacitors for the servo rail and the Notecarrier.
 
 ### WAGO 221 lever-nut assortment (brings the total to 12× 5-port 221-415)
 - [x] Ordered
-- [ ] Received
+- [x] Received
 
 ### 1N5819 Schottky diodes (already owned)
 - [x] Received
@@ -288,7 +288,7 @@ Not needed: the Coral is dropped with the switch to the ESP32-P4.
 ### Nylon standoff + screw + nut assortment, M2 / M3 / M4, male-female (Raogoodcx, 360 pcs)
 Camera: 4× M2 standoffs + M2 screws (length = the lens's height above the board + ~1.5mm, so measure the camera first). P4-NANO: check its hole size. The kit has no M2.5; if the holes are M2.5, M2 screws fit through them.
 - [x] Ordered
-- [ ] Received
+- [x] Received
 
 ### 5-minute epoxy (NOT superglue — its fumes fog the clear lid)
 Hardware store.
@@ -384,7 +384,7 @@ Not needed for the Coral. Revisit only if the P4-NANO's measured idle draw turns
 
 ### Pinecil V2 soldering iron (BB2, Amazon)
 - [x] Ordered
-- [ ] Received
+- [x] Received
 
 ### 65W USB-C PD power supply (Handheld Legend, 20V / 3.25A) — powers the Pinecil
 - [x] Ordered
@@ -396,15 +396,15 @@ Not needed for the Coral. Revisit only if the P4-NANO's measured idle draw turns
 
 ### Rosin-core solder, 0.6mm, 100g (MAIYUM)
 - [x] Ordered
-- [ ] Received
+- [x] Received
 
 ### Hakko 633-01 iron holder + tip cleaner
 - [x] Ordered
-- [ ] Received
+- [x] Received
 
 ### Desoldering wick (TOWOT)
 - [x] Ordered
-- [ ] Received
+- [x] Received
 
 ### Flux pen
 - [x] Ordered
@@ -412,11 +412,11 @@ Not needed for the Coral. Revisit only if the P4-NANO's measured idle draw turns
 
 ### Digital calipers
 - [x] Ordered
-- [ ] Received
+- [x] Received
 
 ### Metric hex key set
 - [x] Ordered
-- [ ] Received
+- [x] Received
 
 ### AMTOVL tool set
 - [x] Ordered
@@ -424,11 +424,11 @@ Not needed for the Coral. Revisit only if the P4-NANO's measured idle draw turns
 
 ### Drill bit set, 19-piece, 1–10mm
 - [x] Ordered
-- [ ] Received
+- [x] Received
 
 ### Step drill bit set (titanium coated) — for gland holes
 - [x] Ordered
-- [ ] Received
+- [x] Received
 
 ### Wire strippers (already owned)
 - [x] Received
