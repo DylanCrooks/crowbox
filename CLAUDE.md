@@ -65,8 +65,14 @@ src/
                                jackpot_chance_pct), NVS-backed
 include/
   crowbox.h                   all shared enums/structs — see "Core types" below
-vision/                       Phase 6, not yet created: separate ESP-IDF project for the
-                               ESP32-P4 vision board (built with idf.py, not PlatformIO)
+shared/
+  vision_protocol.h/.c        UART wire format to the vision board, compiled into BOTH builds
+vision/                       separate ESP-IDF project for the ESP32-P4 vision board
+                               (built with idf.py, not PlatformIO). Code-complete, untested
+                               on hardware: link.c, camera.c, storage.c, classify_blob.c,
+                               classify_model.cpp (ESP-DL, loads /sdcard/model.espdl)
+  test/                       laptop tests (plain gcc) for the blob classifier
+  training/                   Python 3.12 venv + scripts: photos -> MobileNetV2 -> int8 .espdl
 ```
 
 **Development workflow — preserve this pattern.** Never write a new hardware driver directly inside the integrated state machine. Always build and prove it first as a standalone throwaway test program (a temporary `app_main()` that exercises just the one driver and prints results to serial). Only wire it into the real event bus once it works in isolation. This is the established working pattern for this project specifically so a single person can develop one component at a time without holding the entire system in their head.

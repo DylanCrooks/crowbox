@@ -1,15 +1,12 @@
-// Preprocessing: crop the frame to the pit, resize for the model.
+// Preprocessing: RGB565 camera frames -> small grayscale images for the blob classifier.
+// (The trained model's crop/resize/normalize happens in ESP-DL; see classify_model.cpp.)
 #include "preprocess.h"
-
-// Byte order of each RGB565 pixel in the camera buffer. 0 = little-endian uint16
-// (assumed ISP default). If the gray images come out as noise on the real board, set to 1.
-#define PREPROCESS_RGB565_SWAP_BYTES 0
 
 static inline uint16_t pixel_at(const uint8_t *rgb565, int i)
 {
     uint8_t lo = rgb565[2 * i];
     uint8_t hi = rgb565[2 * i + 1];
-#if PREPROCESS_RGB565_SWAP_BYTES
+#if CAMERA_RGB565_SWAP_BYTES
     return (uint16_t)((lo << 8) | hi);
 #else
     return (uint16_t)((hi << 8) | lo);
@@ -52,23 +49,6 @@ void preprocess_gray(const uint8_t *rgb565, int w, int h, int scale, uint8_t *ou
                 }
             }
             out[oy * ow + ox] = (uint8_t)(sum / block);
-        }
-    }
-}
-
-void preprocess_model_input(const uint8_t *rgb565, int w, int h, int size, uint8_t *out_rgb)
-{
-    int side = (w < h) ? w : h;
-    int x0 = (w - side) / 2;
-    int y0 = (h - side) / 2;
-
-    // Nearest-neighbor: each output pixel takes the input pixel at its scaled position.
-    for (int oy = 0; oy < size; oy++) {
-        int sy = y0 + oy * side / size;
-        for (int ox = 0; ox < size; ox++) {
-            int sx = x0 + ox * side / size;
-            uint8_t *o = &out_rgb[(oy * size + ox) * 3];
-            unpack(pixel_at(rgb565, sy * w + sx), &o[0], &o[1], &o[2]);
         }
     }
 }

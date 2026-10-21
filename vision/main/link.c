@@ -4,6 +4,7 @@
 #include <string.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
+#include "freertos/semphr.h"
 #include "freertos/task.h"
 #include "driver/uart.h"
 #include "driver/gpio.h"
@@ -24,12 +25,15 @@
 #define LINK_TASK_STACK_SIZE    (4096)          // bytes (ESP-IDF counts bytes, not words)
 #define LINK_TASK_PRIORITY      (10)
 #define TIMEOUT                 pdMS_TO_TICKS(20)
+#define LINK_MAX_JOBS           (1)     // jobs queued or running at once; more get ERR_BUSY
+#define LINK_INBOX_LEN          (4)     // > LINK_MAX_JOBS, so control messages always fit
 static const char *TAG = "link";
 
 #define READ_BUF_SIZE (1)
 #define BUF_SIZE (1024)
 
-static QueueHandle_t job_queue;
+static QueueHandle_t inbox;
+static SemaphoreHandle_t job_slots;     // counting semaphore: one token per job allowed in flight
 
 
 static void LINK_task(void *arg);
@@ -62,9 +66,8 @@ void link_init(void){
         .arg1 = 0,
     };
     link_send(&m);
-    //job_queue = xQueueCreate(2, size_of(UART_msg_t)) says type name not allowed or smth
-    job_queue = xQueueCreate(1, sizeof(UART_msg_t)); 
-
+    inbox = xQueueCreate(LINK_INBOX_LEN, sizeof(UART_msg_t));   // e.g. 4: jobs + control
+    job_slots = xSemaphoreCreateCounting(LINK_MAX_JOBS, LINK_MAX_JOBS);   // e.g. 1, 1
     xTaskCreate(LINK_task, "uart_LINK_task", LINK_TASK_STACK_SIZE, NULL, LINK_TASK_PRIORITY, NULL);
 
 }
@@ -102,8 +105,12 @@ static UART_msg_t uart_validate(uint8_t *data) {
     }
 }
 
+
+
 static UART_msg_t handle_msg(UART_msg_t *m) {
     UART_msg_t reply = {0};
+
+   
     switch(m->type) {
         default:
         reply.type = MSG_ERROR;
@@ -117,47 +124,73 @@ static UART_msg_t handle_msg(UART_msg_t *m) {
         reply.ID = m->ID;
         reply.arg0 = 0;
         reply.arg1 = 0;
-        //probably need logic here to make sure it's actually ready?
         break;
 
         case MSG_CLASSIFY: {
-        if (xQueueSend(job_queue, m, 0) == pdTRUE) {
-        reply.type = MSG_QUEUED;
-        reply.ID = m->ID;
-        reply.arg0 = 0;
-        reply.arg1 = 0;
-        break;
+        if (xSemaphoreTake(job_slots, 0) == pdTRUE) {
+            if (xQueueSend(inbox,m,0) == pdTRUE) {
+            reply.type = MSG_QUEUED;
+            reply.ID = m->ID;
+            reply.arg0 = 0;
+            reply.arg1 = 0;
+            } else {
+                xSemaphoreGive(job_slots);
+                reply.type = MSG_ERROR;
+                reply.ID = m->ID;
+                reply.arg0 = ERR_BUSY;
+                reply.arg1 = 0;
+            }
         } else {
+        
         reply.type = MSG_ERROR;
         reply.ID = m->ID;
         reply.arg0 = ERR_BUSY;
         reply.arg1 = 0; }
-        break;
         }
+        break;
         
 
         case MSG_CAPTURE_REF:
-        if (xQueueSend(job_queue,m,0) == pdTRUE) {
-        reply.type = MSG_QUEUED;
-        reply.ID = m->ID;
-        reply.arg0 = 0;
-        reply.arg1 = 0;
-        break;
-        }
-        else {
+        if (xSemaphoreTake(job_slots, 0) == pdTRUE) {
+            if (xQueueSend(inbox,m,0) == pdTRUE) {
+            reply.type = MSG_QUEUED;
+            reply.ID = m->ID;
+            reply.arg0 = 0;
+            reply.arg1 = 0;
+            } else {
+                xSemaphoreGive(job_slots);
+                reply.type = MSG_ERROR;
+                reply.ID = m->ID;
+                reply.arg0 = ERR_BUSY;
+                reply.arg1 = 0;
+            }
+        } else {
             reply.type = MSG_ERROR;
             reply.ID = m->ID;
             reply.arg0 = ERR_BUSY;
             reply.arg1 = 0;
         }
         break;
+
+        case MSG_SLEEP:
+        if (xQueueSend(inbox,m,0) == pdTRUE) {
+        reply.type = MSG_QUEUED;
+        reply.ID = m->ID;
+        reply.arg0 = 0;
+        reply.arg1 = 0;
+        } else {
+            // should never happen
+            reply.type = MSG_ERROR;
+            reply.ID = m->ID;
+            reply.arg0 = ERR_SLEEP_FAILED;
+            reply.arg1 = 0;
+        }
+        break;
     }
+
     return reply;
 }
 
-bool link_get_job(UART_msg_t *job, TickType_t wait) {
-    return xQueueReceive(job_queue, job, wait) == pdTRUE;
-}
 
 
 
@@ -180,4 +213,49 @@ static void LINK_task(void *arg)
         link_send(&reply);
         
     }
+}
+
+/* Typed inbox: inbox becomes the worker's one inbox for jobs AND control messages
+ * (consider renaming it inbox). How many jobs may be in flight is decided by job_slots,
+ * not by the queue's length, so a control message always finds room.
+ *
+ * link_init(), before xTaskCreate:
+ *   inbox = xQueueCreate(LINK_INBOX_LEN, sizeof(UART_msg_t));   // e.g. 4: jobs + control
+ *   job_slots = xSemaphoreCreateCounting(LINK_MAX_JOBS, LINK_MAX_JOBS);   // e.g. 1, 1
+ *
+ * handle_msg: dispatch by category, e.g. handle_job_msg() / handle_ctrl_msg():
+ *   job (CLASSIFY, CAPTURE_REF):
+ *     xSemaphoreTake(job_slots, 0) == pdTRUE  -> xQueueSend(inbox, m, 0), reply QUEUED
+ *     otherwise                                -> reply ERR_BUSY (stale work is refused)
+ *   control (SLEEP):
+ *     xQueueSend(inbox, m, 0), reply QUEUED. No token: never refused while the inbox
+ *     has more slots than LINK_MAX_JOBS.
+ *   PING stays answered right in the link task.
+ */
+
+/* link_get_request: xQueueReceive(inbox, msg, wait) == pdTRUE. FIFO order means a SLEEP
+ * that arrives mid-job runs after that job. */
+bool link_get_request(UART_msg_t *msg, TickType_t wait)
+{
+    if (xQueueReceive(inbox,msg,wait) == pdTRUE) {
+        return true;
+    } else {
+        return false;
+    }
+    
+}
+
+/* link_job_done: the worker finished a job (reply sent, photo saved): give its token back,
+ * xSemaphoreGive(job_slots). Not called for control messages: they never took one. */
+void link_job_done(void) {
+    xSemaphoreGive(job_slots);
+}
+
+/* link_flush
+ * uart_wait_tx_done(LINK_UART_PORT_NUM, timeout): blocks until the TX FIFO is empty.
+ * 6 bytes at 115200 baud take ~0.5 ms; a 20-50 ms timeout is plenty.
+ */
+void link_flush(void)
+{
+    uart_wait_tx_done(LINK_UART_PORT_NUM, TIMEOUT);
 }

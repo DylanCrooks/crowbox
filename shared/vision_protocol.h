@@ -24,11 +24,14 @@ typedef enum {
     MSG_RESULT,         // arg0 = class, arg1 = confidence 0-99
     MSG_OK,             // request finished
     MSG_QUEUED,         // request accepted; the final reply follows with the same ID
-    MSG_ERROR           // arg0 = UART_error_enum
+    MSG_ERROR,          // arg0 = UART_error_enum
+    // main ESP32 -> P4 (added last so the values above keep their numbers)
+    MSG_SLEEP           // main is about to deep-sleep; reply: QUEUED then OK, then the P4 sleeps too
 } UART_msg_enum;
 
 typedef enum {
     ERR_NONE,
+    ERR_SLEEP_FAILED,
     ERR_CAMERA_FAILED,
     ERR_SD_CARD_FAILED,
     ERR_BUSY,           // a CLASSIFY/CAPTURE_REF is already in progress; retry later

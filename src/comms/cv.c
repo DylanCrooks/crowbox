@@ -16,6 +16,7 @@
 #define VISION_BUSY_RETRY_MS        300
 #define VISION_MIN_CONFIDENCE       60      // 0-99
 #define VISION_REF_TIMEOUT_MS       1500    // capture + grayscale, with margin
+#define VISION_SLEEP_TIMEOUT_MS     1500    // P4 may first finish saving the reference photo
 
 void cv_light(bool on) {
     mcp23017_set_pin(0, MCP_BIT_COB_LED, on);
@@ -26,6 +27,15 @@ void cv_capture_reference(void) {
     bool got = vision_link_request(MSG_CAPTURE_REF, &reply, VISION_REF_TIMEOUT_MS);
     if (!got || reply.type != MSG_OK) {
         ESP_LOGW(TAG, "reference capture failed (%s)", !got ? "timeout" : "error");
+    }
+}
+
+void cv_vision_sleep(void) {
+    UART_msg_t reply;
+    bool got = vision_link_request(MSG_SLEEP, &reply, VISION_SLEEP_TIMEOUT_MS);
+    if (!got || reply.type != MSG_OK) {
+        // Not fatal: the P4 just stays awake (costs power) until the next visit's sleep.
+        ESP_LOGW(TAG, "vision board didn't confirm sleep (%s)", !got ? "timeout" : "error");
     }
 }
 

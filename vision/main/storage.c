@@ -144,3 +144,15 @@ esp_err_t storage_save_frame(const uint8_t *rgb565, size_t len, uint32_t *photo_
     unlink(STORAGE_TMP_PATH);
     return ESP_FAIL;
 }
+
+esp_err_t storage_deinit(void)
+{   
+    esp_err_t unmount_res = esp_vfs_fat_sdcard_unmount(STORAGE_MOUNT_POINT,s_card);
+    if (unmount_res != ESP_OK) {
+        ESP_LOGE(TAG, "storage_deinit failed, %s", esp_err_to_name(unmount_res));
+        return ESP_FAIL;    
+    } else {
+        return ESP_OK;
+    }
+    
+}

@@ -106,6 +106,7 @@ static void run_cooldown_sequence(void) {
     transition_to(STATE_LOGGING);
     run_logging_sequence();
     transition_to(STATE_IDLE);
+    cv_vision_sleep();
     sleep_enter_deep();
 }
 

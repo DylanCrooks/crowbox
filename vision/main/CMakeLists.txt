@@ -1,4 +1,4 @@
-idf_component_register(SRCS "vision.c" "main.c"
+idf_component_register(SRCS "vision.c" "power.c" "main.c"
                             "link.c"
                             "camera.c"
                             "storage.c"

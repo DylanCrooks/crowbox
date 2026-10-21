@@ -15,3 +15,7 @@ void cv_light(bool on);
 // Pit is empty (trapdoor just closed): has the vision board photograph it as the
 // background for the next deposit. Blocks until it replies or times out.
 void cv_capture_reference(void);
+
+// Tells the vision board to deep-sleep; call right before this board's own deep sleep.
+// Both wake together from the PIR. Blocks until the P4 confirms or times out.
+void cv_vision_sleep(void);

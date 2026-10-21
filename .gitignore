@@ -15,3 +15,10 @@ build/
 # ESP-IDF vision project
 vision/sdkconfig.old
 vision/managed_components/
+
+# Vision training (vision/training): local Python env, photos, and generated models
+vision/training/.venv/
+vision/training/dataset/
+vision/training/output/
+vision/training/smoke/
+__pycache__/

@@ -23,13 +23,15 @@ bool classify_blob_init(int w, int h);
 // (the floor's typical brightness then stands in for it). Both w x h, from preprocess_gray().
 bool classify_blob(const uint8_t *gray, const uint8_t *ref, classify_result_t *out);
 
-// ---- v2: trained int8 model via ESP-DL (classify_model.cpp). Stub until a model exists. ----
+// ---- v2: trained int8 model via ESP-DL (classify_model.cpp), made by vision/training/. ----
 
-// Loads the model from the "model" flash partition. False if there is no model.
+// Loads /sdcard/model.espdl. False if there's no model file (then use the blob classifier).
+// Call after storage_init() has mounted the card.
 bool classify_model_init(void);
 
-// rgb: size x size RGB888 from preprocess_model_input().
-bool classify_model(const uint8_t *rgb, classify_result_t *out);
+// rgb565: the full camera frame (w x h). The model crops and resizes it itself, exactly
+// as vision/training/common.py does to the training photos.
+bool classify_model(const uint8_t *rgb565, int w, int h, classify_result_t *out);
 
 #ifdef __cplusplus
 }

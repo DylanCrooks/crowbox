@@ -234,7 +234,7 @@ One goes in the vision box (12V → 5V for the P4 board and the PIR).
 ### Electrolytic capacitor assortment kit (ALLECIN)
 Includes the bulk capacitors for the servo rail and the Notecarrier.
 - [x] Ordered
-- [ ] Received
+- [x] Received
 
 ### Inline fuse holder, waterproof (ecocstm, 2-pack)
 - [x] Ordered
@@ -280,7 +280,7 @@ Assembly notes: [crowbox_vision_box.txt](crowbox_vision_box.txt). The ESP32-P4 b
 
 ### Vision box — SENRISE IP65 ABS box, clear lid, 115×90×55mm
 - [x] Ordered
-- [ ] Received
+- [x] Received
 
 ### ~~Right-angle USB-C to right-angle micro-USB OTG cable~~
 Not needed: the Coral is dropped with the switch to the ESP32-P4.
@@ -340,7 +340,7 @@ Vision coprocessor. 50×50mm, ESP32-P4 with 32MB PSRAM, standard 15-pin Pi camer
 ### OV5647 5MP camera — 3.6mm adjustable-focus lens, 25×24mm board
 Comes with 15-to-15-pin and 15-to-22-pin cables; use the 15-to-15 one for the P4-NANO. Check it has an IR filter (not a "NoIR" / night-vision version).
 - [x] Ordered
-- [ ] Received
+- [x] Received
 
 ### SanDisk High Endurance 32GB microSD (SDSQQNR-032G)
 For saving training photos on the P4-NANO's microSD slot.
@@ -392,7 +392,7 @@ Not needed for the Coral. Revisit only if the P4-NANO's measured idle draw turns
 
 ### Anker 643 USB-C to USB-C cable, 100W, silicone, 3ft
 - [x] Ordered
-- [ ] Received
+- [x] Received
 
 ### Rosin-core solder, 0.6mm, 100g (MAIYUM)
 - [x] Ordered
@@ -502,6 +502,24 @@ See the Excel's Glands tab for counts and positions. Servo plugs are about 7.6mm
 - [ ] Received
 
 ### Main power switch, sealed
+- [ ] Ordered
+- [ ] Received
+
+**Phase 9 — Solar (not needed for bench or first deployment)**
+
+### Solar panel, 20W 12V (~470×345×20mm)
+- [ ] Ordered
+- [ ] Received
+
+### Small-panel tilt mount kit
+- [ ] Ordered
+- [ ] Received
+
+### Victron SmartSolar MPPT 75/10 charge controller (LiFePO4 profile, load output)
+- [ ] Ordered
+- [ ] Received
+
+### 2-core 18 AWG UV-rated outdoor cable (panel to controller)
 - [ ] Ordered
 - [ ] Received
 

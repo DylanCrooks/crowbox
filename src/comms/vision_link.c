@@ -34,6 +34,11 @@ void vision_link_init(void) {
         return;
     }
     s_link_up = true;
+
+    // Wake the vision board: it sleeps with EXT1 armed on its RX pin, and this frame's first
+    // start bit pulls that line low. The frame itself is lost while the P4 boots; it
+    // announces itself with READY ~1-2 s later.
+    vision_link_send(MSG_PING);
 }
 
 // ID 0 is reserved for the vision board's unprompted READY.
