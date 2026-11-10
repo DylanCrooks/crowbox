@@ -47,7 +47,7 @@ Last big order: 2026-10-17 (frame, fasteners, enclosures, electronics, Blues, to
 ### Misumi HFS5-2020 extrusion, cut to length — 35 pcs
 1000mm ×4, 490mm ×5, 450mm ×5, 380mm ×8, 170mm ×4, 150mm ×9.
 - [x] Ordered
-- [ ] Received
+- [x] Received
 
 ### 2028 corner bracket kits (BLCCLOY 20-set) ×4 — 80 brackets
 Each bracket comes with 2 T-nuts, 2 M5×10 screws and 2 washers.
@@ -67,40 +67,40 @@ Spacers: the McMaster spacers are dropped. Front panel standoffs = a stack of 5 
 ### M5 button head socket cap screws
 ×8mm (10), ×10mm (100), ×12mm (100), ×16mm (30), ×20mm (5), ×25mm (6), ×50mm (15).
 - [x] Ordered
-- [ ] Received
+- [x] Received
 
 ### M4 button head socket cap screws
 ×16mm (6), ×20mm (10).
 - [x] Ordered
-- [ ] Received
+- [x] Received
 
 ### M5 flat washers, DIN 125A, 5.3×10×1.0 (225)
 - [x] Ordered
-- [ ] Received
+- [x] Received
 
 ### M5 fender washers, 5.3×15×1.2 (25)
 - [x] Ordered
-- [ ] Received
+- [x] Received
 
 ### M4 flat washers, 4.3×9×0.8 (43)
 - [x] Ordered
-- [ ] Received
+- [x] Received
 
 ### M5 nylon lock nuts (10)
 - [x] Ordered
-- [ ] Received
+- [x] Received
 
 ### M4 nylon lock nuts (10)
 - [x] Ordered
-- [ ] Received
+- [x] Received
 
 ### M5 hex nuts (10)
 - [x] Ordered
-- [ ] Received
+- [x] Received
 
 ### M4 hex nuts (need at least 6)
 - [x] Ordered
-- [ ] Received
+- [x] Received
 
 ### M5×75 hex bolts ×4 (skirt)
 Not in the Albany order — buying at the hardware store.
@@ -268,7 +268,7 @@ Likely unnecessary now that the adjustable buck converter can feed the breadboar
 ### Main junction box — hinged IP65 ABS, clear PC lid, 290×190×140mm
 Interior 264×166mm. Includes a perforated ABS mounting board (245×148×4mm) and 4 mounting brackets. Clear lid: keep it shaded, since sun heats a clear box.
 - [x] Ordered
-- [ ] Received
+- [x] Received
 
 (Cable glands are in the wiring order — see "Not ordered yet".)
 
@@ -298,13 +298,17 @@ Hardware store.
 ### ~~3M VHB double-sided tape (holds the Coral)~~
 Not needed for the vision box any more (it only held the Coral). VHB for the pit lining and signal pod is under "Not ordered yet".
 
+
 ### Black adhesive foam strip (ring around the lens, blocks reflections)
 Hardware store (black foam weatherstrip).
-- [ ] Ordered
-- [ ] Received
+- [x] Ordered
+- [x] Received
 
 ### ~~4-conductor cable, 22 AWG (5V / GND / TX / RX to the main box)~~
 Replaced by the Cat6 link (Excel Wiring tab, W08), which also carries the PIR and HX711 lines. Cat6 is in the wiring order.
+- [x] Ordered
+- [x] Received
+
 
 ### ~~M4 bolts ×4 + nylon-insert lock nuts + washers (box ears to reward chamber floor)~~
 Replaced: the model hangs the vision box from the two reward crossbars with M5 screws into T-nuts (Excel Fasteners tab), covered by the frame and fastener orders.
@@ -316,17 +320,17 @@ Replaced: the model hangs the vision box from the two reward crossbars with M5 s
 ### Blues Notecard Cellular — MBNAN (LTE Cat-1 bis, North America), $49
 Includes 10 years of service and 500MB of data. The LTE-M (narrowband) version originally planned is now quote-only with a 250-unit minimum. Connects to the main ESP32 (I2C), not the vision board.
 - [x] Ordered
-- [ ] Received
+- [x] Received
 
 ### Notecarrier A v2.3 ($25)
 68×75mm, onboard cellular and GPS antennas, LiPo/solar connectors. Power its V+ pin from the 5V rail (2.5–5.5V; plan for brief ~2A bursts).
 - [x] Ordered
-- [ ] Received
+- [x] Received
 
 ### Blues flexible LTE/Wi-Fi/GNSS antenna ($3.25)
 Backup for the Notecarrier's onboard antenna if signal is weak inside the junction box. Use only the LTE lead.
 - [x] Ordered
-- [ ] Received
+- [x] Received
 
 ---
 
@@ -335,7 +339,7 @@ Backup for the Notecarrier's onboard antenna if signal is weak inside the juncti
 ### Waveshare ESP32-P4-NANO — basic kit (with speaker)
 Vision coprocessor. 50×50mm, ESP32-P4 with 32MB PSRAM, standard 15-pin Pi camera connector, microSD slot, USB-C. Replaces the Pi Zero 2 WH, Coral, Camera Module 3, Zero camera cable and OTG cable.
 - [x] Ordered
-- [ ] Received
+- [x] Received
 
 ### OV5647 5MP camera — 3.6mm adjustable-focus lens, 25×24mm board
 Comes with 15-to-15-pin and 15-to-22-pin cables; use the 15-to-15 one for the P4-NANO. Check it has an IR filter (not a "NoIR" / night-vision version).
@@ -345,11 +349,11 @@ Comes with 15-to-15-pin and 15-to-22-pin cables; use the 15-to-15 one for the P4
 ### SanDisk High Endurance 32GB microSD (SDSQQNR-032G)
 For saving training photos on the P4-NANO's microSD slot.
 - [x] Ordered
-- [ ] Received
+- [x] Received
 
 ### USB 2.0 keychain microSD card reader (PiShop)
 - [x] Ordered
-- [ ] Received
+- [x] Received
 
 ### ~~Raspberry Pi Zero 2 WH~~
 Replaced by the ESP32-P4-NANO (2026-10-17). The Zero 2 W was unobtainable.
@@ -388,7 +392,7 @@ Not needed for the Coral. Revisit only if the P4-NANO's measured idle draw turns
 
 ### 65W USB-C PD power supply (Handheld Legend, 20V / 3.25A) — powers the Pinecil
 - [x] Ordered
-- [ ] Received
+- [x] Received
 
 ### Anker 643 USB-C to USB-C cable, 100W, silicone, 3ft
 - [x] Ordered
@@ -408,7 +412,7 @@ Not needed for the Coral. Revisit only if the P4-NANO's measured idle draw turns
 
 ### Flux pen
 - [x] Ordered
-- [ ] Received
+- [x] Received
 
 ### Digital calipers
 - [x] Ordered
@@ -420,7 +424,7 @@ Not needed for the Coral. Revisit only if the P4-NANO's measured idle draw turns
 
 ### AMTOVL tool set
 - [x] Ordered
-- [ ] Received
+- [x] Received
 
 ### Drill bit set, 19-piece, 1–10mm
 - [x] Ordered
@@ -435,8 +439,8 @@ Not needed for the Coral. Revisit only if the P4-NANO's measured idle draw turns
 
 ### Heat gun
 Hardware store.
-- [ ] Ordered
-- [ ] Received
+- [x] Ordered
+- [x] Received
 
 ---
 
@@ -445,83 +449,83 @@ Hardware store.
 **Hardware store**
 
 ### Plywood (panels)
-- [ ] Ordered
-- [ ] Received
+- [x] Ordered
+- [x] Received
 
 ### Wood screws
-- [ ] Ordered
-- [ ] Received
+- [x] Ordered
+- [x] Received
 
 ### 3M VHB tape (pit lining, signal pod)
-- [ ] Ordered
-- [ ] Received
+- [x] Ordered
+- [x] Received
 
 (Also from the hardware store, listed above: M5×75 hex bolts ×4, 5-minute epoxy, black foam weatherstrip, heat gun.)
 
 **Wiring order (later)**
 
 ### Cat6 stranded patch cable (vision box link, plugs cut off)
-- [ ] Ordered
-- [ ] Received
+- [x] Ordered
+- [x] Received
 
 ### Field cables (jacketed multi-core runs per the Excel Wiring tab)
-- [ ] Ordered
-- [ ] Received
+- [x] Ordered
+- [x] Received
 
 ### Cable glands — PG7 / PG9 assortment + PG16 with multi-hole inserts
 See the Excel's Glands tab for counts and positions. Servo plugs are about 7.6mm wide and need PG9 or larger to pass through.
-- [ ] Ordered
-- [ ] Received
+- [x] Ordered
+- [x] Received
 
 ### Ferrules
-- [ ] Ordered
-- [ ] Received
+- [x] Ordered
+- [x] Received
 
 ### Heat-shrink (plain + adhesive-lined)
-- [ ] Ordered
-- [ ] Received
+- [x] Ordered
+- [x] Received
 
 ### Dupont jumpers / female housings (incl. the ESP32-P4 board's header)
-- [ ] Ordered
-- [ ] Received
+- [x] Ordered
+- [x] Received
 
 ### Hookup wire
-- [ ] Ordered
-- [ ] Received
+- [x] Ordered
+- [x] Received
 
 ### Split loom
-- [ ] Ordered
-- [ ] Received
+- [x] Ordered
+- [x] Received
 
 ### COB LED strip
-- [ ] Ordered
-- [ ] Received
+- [x] Ordered
+- [x] Received
 
 ### Silica gel packs (condensation in the sealed boxes)
 - [ ] Ordered
 - [ ] Received
 
 ### Main power switch, sealed
-- [ ] Ordered
-- [ ] Received
+- [x] Ordered
+- [x] Received
 
 **Phase 9 — Solar (not needed for bench or first deployment)**
 
 ### Solar panel, 20W 12V (~470×345×20mm)
-- [ ] Ordered
-- [ ] Received
+- [x] Ordered
+- [x] Received
 
 ### Small-panel tilt mount kit
 - [ ] Ordered
 - [ ] Received
 
 ### Victron SmartSolar MPPT 75/10 charge controller (LiFePO4 profile, load output)
-- [ ] Ordered
+- [x] Ordered
 - [ ] Received
 
 ### 2-core 18 AWG UV-rated outdoor cable (panel to controller)
-- [ ] Ordered
-- [ ] Received
+- [x] Ordered
+- [x] Received
 
 **Fabrication**
 
