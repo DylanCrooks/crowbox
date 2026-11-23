@@ -1,0 +1,7 @@
+dependencies:
+  idf: '>=5.5'
+  # The P4 has no radio. esp_wifi_remote gives it the normal esp_wifi API; esp_hosted
+  # carries those calls over SDIO to the onboard ESP32-C6, which does the actual Wi-Fi.
+  espressif/esp_wifi_remote: '>=1.0'
+  # Pinned: the C6's slave firmware should match this host version (see wifi_ota.c).
+  espressif/esp_hosted: '~2.13.1'

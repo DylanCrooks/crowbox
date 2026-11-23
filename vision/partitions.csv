@@ -1,8 +1,17 @@
-# ESP32-P4-NANO, 16MB flash. Blank offsets are filled in automatically
-# (the partition table itself sits at 0x8000; app partitions get 64K-aligned).
-# Name,   Type, SubType, Offset, Size,  Flags
-nvs,      data, nvs,     ,       24K,
-factory,  app,  factory, ,       4M,
-# Int8 classifier weights, loaded by ESP-DL straight from flash.
-model,    data, spiffs,  ,       4M,
-# ~8MB left unallocated after this.
+# ESP32-P4-NANO, 16MB flash. Fixed by the first USB flash: an over-the-air update replaces
+# only the app, never this table or the bootloader, so get it right before the box is sealed.
+#
+# The table sits at 0x10000 (CONFIG_PARTITION_TABLE_OFFSET), not the default 0x8000, to give
+# the bootloader room to grow (it starts at 0x2000 on the P4; rollback support makes it bigger).
+#
+# Two app slots: an update is written to the slot that isn't running, and otadata says which
+# one boots. A new app that fails its self-check rolls back to the other (see wifi_ota.c).
+#
+# Name,   Type, SubType, Offset,   Size
+nvs,      data, nvs,     0x11000,  0xD000
+otadata,  data, ota,     0x1E000,  0x2000
+ota_0,    app,  ota_0,   0x20000,  6M
+ota_1,    app,  ota_1,   0x620000, 6M
+# Spare, for loading the int8 classifier from flash later (ESP-DL can, instead of the SD card).
+# Unused today: classify_model.cpp loads /sdcard/model.espdl. Fills flash to the end (16MB).
+model,    data, spiffs,  0xC20000, 0x3E0000
