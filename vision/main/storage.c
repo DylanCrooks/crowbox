@@ -9,6 +9,7 @@
 #include "driver/sdmmc_host.h"
 #include "sd_pwr_ctrl_by_on_chip_ldo.h"
 #include "driver/jpeg_encode.h"
+#include "driver/gpio.h"
 #include "camera.h"
 #include "storage.h"
 
@@ -49,6 +50,7 @@ esp_err_t storage_init(void)
     sd_pwr_ctrl_new_on_chip_ldo(&sd_pwr_config, &sd_pwr_ctrl_handle); //placeholder until we know if NANO
     // uses LDO or GPIO45 power switch
     sdmmc_host_t host = SDMMC_HOST_DEFAULT();
+    host.slot = SDMMC_HOST_SLOT_0;  // default is slot 1, which the C6 (Wi-Fi) uses; pins 39-44 are slot 0
     host.pwr_ctrl_handle = sd_pwr_ctrl_handle;
 
     sdmmc_slot_config_t slot = SDMMC_SLOT_CONFIG_DEFAULT();
@@ -70,6 +72,12 @@ esp_err_t storage_init(void)
     if (mount_check != 0) {
         ESP_LOGE(TAG,"shizzz....mount check failed.....shizzzzzzzzzzzz");
         return ESP_FAIL;}
+    // P4-NANO: the default drive strength rings on this board's SD traces and corrupts
+    // multi-sector writes (esp-idf #19361). Weaker drive fixes it. Set after the mount,
+    // which (re)configures the pins. Pins 39-44 = D0-D3, CLK, CMD.
+    for (int pin = STORAGE_SD_D0_PIN; pin <= STORAGE_SD_CMD_PIN; pin++) {
+        gpio_set_drive_capability(pin, GPIO_DRIVE_CAP_1);
+    }
     
     
     jpeg_encode_engine_cfg_t jecfg = {.timeout_ms = STORAGE_JPEG_TIMEOUT_MS};
