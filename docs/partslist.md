@@ -521,7 +521,7 @@ See the Excel's Glands tab for counts and positions. Servo plugs are about 7.6mm
 
 ### Victron SmartSolar MPPT 75/10 charge controller (LiFePO4 profile, load output)
 - [x] Ordered
-- [ ] Received
+- [x] Received
 
 ### 2-core 18 AWG UV-rated outdoor cable (panel to controller)
 - [x] Ordered
@@ -530,12 +530,12 @@ See the Excel's Glands tab for counts and positions. Servo plugs are about 7.6mm
 **Fabrication**
 
 ### SendCutSend — reward tray
-- [ ] Ordered
-- [ ] Received
+- [x] Ordered
+- [x] Received
 
 ### SendCutSend — bottom plate (0.187")
-- [ ] Ordered
-- [ ] Received
+- [x] Ordered
+- [x] Received
 
 ### SendCutSend — gate (0.177" polycarbonate)
 - [ ] Ordered

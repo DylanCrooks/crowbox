@@ -14,6 +14,7 @@
 #include "event_bus.h"
 #include "state_machine.h"
 #include "tests.h"
+#include "selftest.h"
 #include "esp_sleep.h"
 #include "esp_random.h"
 #include "nvs_flash.h"
@@ -24,31 +25,38 @@
 static const char *TAG = "crowbox";
 
 void app_main(void) {
-    ESP_LOGI(TAG, "CrowBox starting");
-    nvs_flash_init();
-    config_init();
-    i2c_bus_init();
-    mcp23017_init();
-    gate_home();
-    weight_init(WEIGHT_SENSOR_DEPOSIT);
-    weight_init(WEIGHT_SENSOR_REWARD);
-    pir_init();
-    servo_init();
-    buzzer_init();
-    vision_link_init();
-    event_bus_init();
-    state_machine_start();
-    srand(esp_random());
-    
+    selftest_run();            // power-on self-test -> serial + Notehub (selftest.qo). Comment out for production.
 
-    log_boot(g_config.stage, g_config.successful_deposit_count);
-    
-    if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_EXT0) {
-        pir_post_arrival_event();
-    }
-    // Swap which test to run — comment all out for production
-    //test_solenoid_and_servo();
-    test_gate();
-    // test_weight_sensors();
-    // test_mcp23017_leds();
+    // ESP_LOGI(TAG, "CrowBox junction box bring-up");
+    // i2c_bus_init();
+    // test_junction_bringup();   // never returns; ends in a live HX711 loop
+
+    /* ---- Normal startup: restore this block (and delete the two lines above) after bring-up ----
+    // nvs_flash_init();
+    // config_init();
+    // i2c_bus_init();
+    // mcp23017_init();
+    // gate_home();
+    // weight_init(WEIGHT_SENSOR_DEPOSIT);
+    // weight_init(WEIGHT_SENSOR_REWARD);
+    // pir_init();
+    // servo_init();
+    // buzzer_init();
+    // vision_link_init();
+    // event_bus_init();
+    // state_machine_start();
+    // srand(esp_random());
+
+
+    // log_boot(g_config.stage, g_config.successful_deposit_count);
+
+    // if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_EXT0) {
+    // pir_post_arrival_event();
+    // }
+    // // Swap which test to run — comment all out for production
+    // //test_solenoid_and_servo();
+    // test_gate();
+    // // test_weight_sensors();
+    // // test_mcp23017_leds();
+    ---- end of normal startup ---- */
 }

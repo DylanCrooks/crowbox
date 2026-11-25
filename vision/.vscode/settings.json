@@ -10,5 +10,6 @@
     "idf.flashType": "UART",
     // Keep CMake Tools from configuring this folder on its own; the ESP-IDF extension drives the build.
     "cmake.configureOnOpen": false,
-    "cmake.autoConfigureOnEdit": false
+    "cmake.autoConfigureOnEdit": false,
+    "idf.port": "COM5"
 }
